@@ -1,8 +1,6 @@
 import React, { useState, Suspense } from "react";
 import UploadComponent from "./UploadComponent";
 import "./Landing.css";
-import { useTranslation } from "react-i18next";
-import "./i18n";
 
 function App() {
   const { t, i18n } = useTranslation();
