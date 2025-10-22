@@ -5,7 +5,6 @@ import Papa from "papaparse";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 import "./UploadComponent.css";
-import { auth, provider, signInWithPopup, signOut } from "./firebase";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const GEOAPIFY_API_KEY = "7da23bd96a564a17b6fc360f35c5177e";
@@ -15,12 +14,12 @@ function UploadComponent() {
   const [language, setLanguage] = useState("en");
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
+  const [validation, setValidation] = useState(null); // { duplicates: [], faults: [], price: 0.1 * (data.length - 10) }
   const [darkMode, setDarkMode] = useState(false);
-  const [user, setUser] = useState(null);
-  const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [credits, setCredits] = useState(10); // Start with 10 free rows
   const [error, setError] = useState("");
   const [sheetUrl, setSheetUrl] = useState("");
-  const [uploadMethod, setUploadMethod] = useState("local"); // "local" or "sheets"
+  const [uploadMethod, setUploadMethod] = useState("local");
 
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
@@ -28,42 +27,19 @@ function UploadComponent() {
     i18n.changeLanguage(lang);
   };
 
-  const handleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
-      console.log(
-        "Signed in/up:",
-        result.user.displayName || result.user.email
-      );
-      alert("Signed in/up successfully with Google!");
-    } catch (error) {
-      console.error("Login error:", error.message);
-      setError("Sign in/up failed: " + error.message);
-      alert("Sign in/up failed: " + error.message);
-    }
-  };
-
-  const handleLogout = () => {
-    signOut(auth);
-    setUser(null);
-    setError("");
-  };
-
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const fileType = file.name.split(".").pop().toLowerCase();
-    console.log("Uploading file:", file.name, fileType);
 
     if (fileType === "csv") {
       Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          console.log("Parsed CSV data:", results.data);
           setData(results.data);
+          validateData(results.data);
         },
       });
     } else {
@@ -74,11 +50,27 @@ function UploadComponent() {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet);
-        console.log("Parsed XLSX data:", jsonData);
         setData(jsonData);
+        validateData(jsonData);
       };
       reader.readAsBinaryString(file);
     }
+  };
+
+  const validateData = (data) => {
+    const duplicates = data.filter(
+      (row, index) =>
+        data.findIndex(
+          (r, i) => i !== index && r.From === row.From && r.To === row.To
+        ) !== -1
+    );
+    const faults = data.filter((row) => !row.From || !row.To);
+    const price = Math.max(0, (data.length - 10) * 0.1).toFixed(2);
+    setValidation({
+      duplicates: [...new Set(duplicates.map((d) => `${d.From} - ${d.To}`))],
+      faults: faults.length,
+      price,
+    });
   };
 
   const handleSheetUrlSubmit = async (e) => {
@@ -95,7 +87,6 @@ function UploadComponent() {
 
     const sheetId = sheetIdMatch[1];
     const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
-    console.log("Fetching sheet URL:", csvUrl);
 
     try {
       const response = await fetch(csvUrl);
@@ -108,13 +99,12 @@ function UploadComponent() {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          console.log("Parsed sheet data:", results.data);
           setData(results.data);
+          validateData(results.data);
         },
       });
       setError("");
     } catch (err) {
-      console.error("Sheet fetch error:", err);
       setError("Error fetching Google Sheet: " + err.message);
     }
   };
@@ -134,11 +124,15 @@ function UploadComponent() {
   };
 
   const calculateDistances = async () => {
-    const limitedData = user || paymentCompleted ? data : data.slice(0, 10);
-    console.log("Calculating distances for:", limitedData.length, "rows");
-    const calculated = [];
+    if (!validation || data.length > credits) {
+      setError(
+        `You need ${validation ? validation.price : 0} credits. Buy more rows!`
+      );
+      return;
+    }
 
-    for (const row of limitedData) {
+    const calculated = [];
+    for (const row of data) {
       const from = await geocode(row.From);
       const to = await geocode(row.To);
 
@@ -156,17 +150,38 @@ function UploadComponent() {
         calculated.push({ ...row, Distance: "Geocode failed" });
       }
     }
-
-    console.log("Calculated results:", calculated);
     setResults(calculated);
+    setCredits(credits - data.length); // Deduct used rows
+    setValidation(null); // Reset validation after calculation
   };
 
   const downloadResults = () => {
-    console.log("Downloading results:", results.length, "rows");
-    const worksheet = XLSX.utils.json_to_sheet(results);
+    if (!results.length) return;
     const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(results);
     XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
     XLSX.writeFile(workbook, "calculated_distances.xlsx");
+  };
+
+  const buyRows = (rows, amount) => {
+    return (
+      <PayPalButtons
+        style={{ layout: "vertical" }}
+        createOrder={(data, actions) =>
+          actions.order.create({
+            purchase_units: [
+              { amount: { value: amount.toFixed(2), currency_code: "USD" } },
+            ],
+          })
+        }
+        onApprove={(data, actions) => {
+          actions.order.capture().then(() => {
+            setCredits(credits + rows);
+            alert(`Purchased ${rows} rows! New total: ${credits + rows}`);
+          });
+        }}
+      />
+    );
   };
 
   return (
@@ -179,24 +194,9 @@ function UploadComponent() {
         >
           {darkMode ? "☀️" : "🌙"}
         </button>
-        {user && (
-          <button onClick={handleLogout} className="auth-button">
-            👤 {user.email || user.displayName}
-          </button>
-        )}
       </div>
 
-      {!user && (
-        <div className="auth-section">
-          <button onClick={handleLogin} className="auth-button">
-            Sign In/Sign Up
-          </button>
-        </div>
-      )}
-
       {error && <p className="error">{error}</p>}
-
-      <h2>{t("title")}</h2>
 
       <div className="language-section">
         <label htmlFor="language-select" className="language-label">
@@ -269,11 +269,34 @@ function UploadComponent() {
         )}
       </div>
 
+      {validation && (
+        <div className="validation-summary">
+          <h3>Validation Results</h3>
+          {validation.duplicates.length > 0 && (
+            <p>Duplicates found: {validation.duplicates.join(", ")}</p>
+          )}
+          {validation.faults > 0 && (
+            <p>Faults (missing From/To): {validation.faults}</p>
+          )}
+          <p>
+            Total rows: {data.length} | Additional cost: ${validation.price}{" "}
+            (first 10 free)
+          </p>
+          {validation.price > 0 && (
+            <div>
+              <p>Buy more rows:</p>
+              {buyRows(50, 5.0)}
+              {buyRows(100, 9.0)}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="action-buttons">
         <a href="/distance_template.xlsx" download className="auth-button">
           {t("download_template")}
         </a>
-        {data.length > 0 && (
+        {data.length > 0 && validation && validation.price <= 0 && (
           <button
             onClick={calculateDistances}
             className="auth-button calculate"
@@ -287,49 +310,6 @@ function UploadComponent() {
           </button>
         )}
       </div>
-
-      {!user && data.length > 10 && !paymentCompleted && (
-        <div className="payment-notice">
-          <p>To calculate more than 10 rows, please complete payment:</p>
-          <PayPalButtons
-            style={{ layout: "vertical" }}
-            createOrder={(data, actions) =>
-              actions.order.create({
-                purchase_units: [
-                  { amount: { value: (data.length * 0.1).toFixed(2) } },
-                ],
-              })
-            }
-            onApprove={(data, actions) =>
-              actions.order.capture().then(() => {
-                setPaymentCompleted(true);
-                alert("Payment successful. You can now calculate all rows.");
-              })
-            }
-          />
-        </div>
-      )}
-
-      {results.length > 0 && (
-        <table>
-          <thead>
-            <tr>
-              <th>{t("from")}</th>
-              <th>{t("to")}</th>
-              <th>{t("distance")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((row, index) => (
-              <tr key={index}>
-                <td>{row.From}</td>
-                <td>{row.To}</td>
-                <td>{row.Distance}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
     </div>
   );
 }
