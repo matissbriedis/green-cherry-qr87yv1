@@ -4,18 +4,23 @@ import { initReactI18next } from "react-i18next";
 
 const resources = {
   en: {
-    title: "Excel, XLSX, CSV, Google Sheets & Spreadsheet Bulk Distance Calculation",
-    description: "Calculate distances between locations in bulk. First 10 rows free, buy more as needed!",
+    title:
+      "Excel, XLSX, CSV, Google Sheets & Spreadsheet Bulk Distance Calculation",
+    description:
+      "Calculate distances between locations in bulk. First 10 rows free, buy more as needed!",
     start_now: "Start Now",
     toggle_language: "Toggle Language",
     features_title: "Features You Love",
-    feature_supports: "Supports countries, cities, regions, postal addresses, postcodes, airport codes (IATA), what3words, coordinates.",
-    feature_output: "Output: Airline distance, driving distance/duration, time difference, bearing, compass direction.",
+    feature_supports:
+      "Supports countries, cities, regions, postal addresses, postcodes, airport codes (IATA), what3words, coordinates.",
+    feature_output:
+      "Output: Airline distance, driving distance/duration, time difference, bearing, compass direction.",
     feature_validation: "Free input validation (duplicates & fault detection).",
     feature_no_signup: "No sign-up required—pay per use with PayPal.",
     how_it_works_title: "How It Works",
     step1: "Download the template or use your own XLSX/CSV/Google Sheet.",
-    step2: "Upload your file for free validation (detects issues, shows price).",
+    step2:
+      "Upload your file for free validation (detects issues, shows price).",
     step3: "Buy rows via PayPal if needed (first 10 free).",
     step4: "Download full results with distances added to your sheet.",
     upload_title: "Upload Your File",
@@ -32,23 +37,29 @@ const resources = {
     buy_100_price: "$9.00",
     footer_text: "Questions? Check",
     footer_link: "documentation",
-    footer_contact: "or contact us."
+    footer_contact: "or contact us.",
   },
   lv: {
     title: "Excel, XLSX, CSV, Google Sheets & Izklājlapu attālumu aprēķins",
-    description: "Aprēķiniet attālumus starp vietām vairumā. Pirmās 10 rindas bez maksas, pērciet vairāk pēc vajadzības!",
+    description:
+      "Aprēķiniet attālumus starp vietām vairumā. Pirmās 10 rindas bez maksas, pērciet vairāk pēc vajadzības!",
     start_now: "Sākt tagad",
     toggle_language: "Mainīt valodu",
     features_title: "Iespējas, kuras jūs mīlat",
-    feature_supports: "Atbalsta valstis, pilsētas, reģionus, pasta adreses, pasta indeksus, lidostas kodus (IATA), what3words, koordinātes.",
-    feature_output: "Izvade: Aviokompānijas attālums, braukšanas attālums/ilgums, laika starpība, kursa leņķis, kompass virziens.",
-    feature_validation: "Bezmaksas ievades validācija (dublikāti & kļūdu noteikšana).",
+    feature_supports:
+      "Atbalsta valstis, pilsētas, reģionus, pasta adreses, pasta indeksus, lidostas kodus (IATA), what3words, koordinātes.",
+    feature_output:
+      "Izvade: Aviokompānijas attālums, braukšanas attālums/ilgums, laika starpība, kursa leņķis, kompass virziens.",
+    feature_validation:
+      "Bezmaksas ievades validācija (dublikāti & kļūdu noteikšana).",
     feature_no_signup: "Nav nepieciešama reģistrācija — maksājiet ar PayPal.",
     how_it_works_title: "Kā tas darbojas",
     step1: "Lejupielādējiet veidni vai izmantojiet savu XLSX/CSV/Google Sheet.",
-    step2: "Augšupielādējiet failu bezmaksas validācijai (noteic problēmas, rāda cenu).",
+    step2:
+      "Augšupielādējiet failu bezmaksas validācijai (noteic problēmas, rāda cenu).",
     step3: "Pērciet rindas ar PayPal, ja nepieciešams (pirmās 10 bez maksas).",
-    step4: "Lejupielādējiet pilnus rezultātus ar pievienotiem attālumiem jūsu lapā.",
+    step4:
+      "Lejupielādējiet pilnus rezultātus ar pievienotiem attālumiem jūsu lapā.",
     upload_title: "Augšupielādējiet savu failu",
     pricing_title: "Cenas",
     service: "Pakalpojums",
@@ -63,11 +74,273 @@ const resources = {
     buy_100_price: "9,00 $",
     footer_text: "Jautājumi? Pārbaudiet",
     footer_link: "dokumentāciju",
-    footer_contact: "vai sazinieties ar mums."
+    footer_contact: "vai sazinieties ar mums.",
   },
   et: {
-    title: "Excel, XLSX, CSV, Google Sheets & Arvutustabeli masskauguste arvutamine",
-    description: "Arvuta massiliselt kaugusi asukohtade vahel. Esimesed 10 rida on tasuta, osta rohkem vastavalt vajadusele!",
+    title:
+      "Excel, XLSX, CSV, Google Sheets & Arvutustabeli masskauguste arvutamine",
+    description:
+      "Arvuta massiliselt kaugusi asukohtade vahel. Esimesed 10 rida on tasuta, osta rohkem vastavalt vajadusele!",
     start_now: "Alusta kohe",
     toggle_language: "Vaheta keelt",
-    features_title: "Funktsioonid, mis sulle
+    features_title: "Funktsioonid, mis sulle meeldivad",
+    feature_supports:
+      "Toetab riike, linnu, piirkondi, postiaadresse, postikoodid, lennujaamakoodid (IATA), what3words, koordinaadid.",
+    feature_output:
+      "Väljund: Lennuettevõtte kaugus, sõidu kaugus/kestus, ajavahe, kandmine, kompasssuund.",
+    feature_validation:
+      "Tasuta sisestuse valideerimine (duplikaadid & vea tuvastamine).",
+    feature_no_signup: "Registreerimist ei nõuta — maksa PayPaliga.",
+    how_it_works_title: "Kuidas see toimib",
+    step1: "Lae mall alla või kasuta oma XLSX/CSV/Google Sheet.",
+    step2:
+      "Lae fail üles tasuta valideerimiseks (tuvastab probleemid, näitab hinda).",
+    step3: "Osta ridu PayPaliga, kui vaja (esimesed 10 tasuta).",
+    step4: "Lae alla täielikud tulemused koos lisatud kaugustega sinu tabelis.",
+    upload_title: "Lae üles oma fail",
+    pricing_title: "Hinnakiri",
+    service: "Teenus",
+    price: "Hind",
+    validation_service: "Valideerimine (duplikaadid & vead)",
+    validation_price: "Tasuta",
+    additional_rows: "Lisaridad (rida kohta, pärast 10 tasuta)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Osta 50 rida",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Osta 100 rida",
+    buy_100_price: "9,00 $",
+    footer_text: "Küsimused? Vaata",
+    footer_link: "dokumentatsiooni",
+    footer_contact: "või võta meiega ühendust.",
+  },
+  lt: {
+    title:
+      "Excel, XLSX, CSV, Google Sheets ir skaičiuoklės masinio atstumo skaičiavimas",
+    description:
+      "Skaičiuokite atstumus tarp vietovių masiškai. Pirmosios 10 eilučių nemokamos, pirkite daugiau pagal poreikį!",
+    start_now: "Pradėti dabar",
+    toggle_language: "Keisti kalbą",
+    features_title: "Funkcijos, kurias mylite",
+    feature_supports:
+      "Palaiko šalis, miestus, regionus, pašto adresus, pašto kodus, oro uostų kodus (IATA), what3words, koordinates.",
+    feature_output:
+      "Išvestis: Oro linijų atstumas, važiavimo atstumas/trukmė, laiko skirtumas, azimutas, kompaso kryptis.",
+    feature_validation:
+      "Nemokamas įvesties tikrinimas (dublikatai ir klaidų aptikimas).",
+    feature_no_signup: "Registracija nereikalinga — mokėkite per PayPal.",
+    how_it_works_title: "Kaip tai veikia",
+    step1: "Atsisiųskite šabloną arba naudokite savo XLSX/CSV/Google Sheet.",
+    step2:
+      "Įkelkite failą nemokamam tikrinimui (aptinka problemas, rodo kainą).",
+    step3: "Pirkite eilutes per PayPal, jei reikia (pirmosios 10 nemokamos).",
+    step4:
+      "Atsisiųskite pilnus rezultatus su pridėtais atstumais jūsų lentelėje.",
+    upload_title: "Įkelkite savo failą",
+    pricing_title: "Kainos",
+    service: "Paslauga",
+    price: "Kaina",
+    validation_service: "Tikrinimas (dublikatai ir klaidos)",
+    validation_price: "Nemokamai",
+    additional_rows: "Papildomos eilutės (už eilutę, po 10 nemokamų)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Pirkti 50 eilučių",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Pirkti 100 eilučių",
+    buy_100_price: "9,00 $",
+    footer_text: "Klausimai? Peržiūrėkite",
+    footer_link: "dokumentaciją",
+    footer_contact: "arba susisiekite su mumis.",
+  },
+  pl: {
+    title:
+      "Excel, XLSX, CSV, Google Sheets i masowe obliczanie odległości w arkuszach",
+    description:
+      "Obliczaj odległości między lokalizacjami masowo. Pierwsze 10 wierszy za darmo, kup więcej w razie potrzeby!",
+    start_now: "Rozpocznij teraz",
+    toggle_language: "Zmień język",
+    features_title: "Funkcje, które pokochasz",
+    feature_supports:
+      "Obsługuje kraje, miasta, regiony, adresy pocztowe, kody pocztowe, kody lotnisk (IATA), what3words, współrzędne.",
+    feature_output:
+      "Wyjście: Odległość lotnicza, odległość/długość jazdy, różnica czasu, kierunek, kierunek kompasu.",
+    feature_validation:
+      "Bezpłatna walidacja wejściowa (duplikaty i wykrywanie błędów).",
+    feature_no_signup: "Brak potrzeby rejestracji — płacisz za pomocą PayPal.",
+    how_it_works_title: "Jak to działa",
+    step1: "Pobierz szablon lub użyj własnego XLSX/CSV/Google Sheet.",
+    step2:
+      "Prześlij plik do bezpłatnej walidacji (wykrywa problemy, pokazuje cenę).",
+    step3: "Kup wiersze przez PayPal, jeśli potrzebne (pierwsze 10 za darmo).",
+    step4: "Pobierz pełne wyniki z dodanymi odległościami w Twoim arkuszu.",
+    upload_title: "Prześlij swój plik",
+    pricing_title: "Cennik",
+    service: "Usługa",
+    price: "Cena",
+    validation_service: "Walidacja (duplikaty i błędy)",
+    validation_price: "Darmowa",
+    additional_rows: "Dodatkowe wiersze (za wiersz, po 10 darmowych)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Kup 50 wierszy",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Kup 100 wierszy",
+    buy_100_price: "9,00 $",
+    footer_text: "Pytania? Sprawdź",
+    footer_link: "dokumentację",
+    footer_contact: "lub skontaktuj się z nami.",
+  },
+  sv: {
+    title:
+      "Excel, XLSX, CSV, Google Sheets och kalkylblads massavståndsberäkning",
+    description:
+      "Beräkna avstånd mellan platser i bulk. Första 10 rader gratis, köp fler vid behov!",
+    start_now: "Börja nu",
+    toggle_language: "Byt språk",
+    features_title: "Funktioner du älskar",
+    feature_supports:
+      "Stöder länder, städer, regioner, postadresser, postnummer, flygplatskoder (IATA), what3words, koordinater.",
+    feature_output:
+      "Utskrift: Flygavstånd, köravstånd/tid, tidsdifference, bäring, kompassriktning.",
+    feature_validation:
+      "Gratis inmatningsvalidering (dubbletter & felidentifiering).",
+    feature_no_signup: "Ingen registrering krävs — betala med PayPal.",
+    how_it_works_title: "Hur det fungerar",
+    step1: "Ladda ner mallen eller använd din egen XLSX/CSV/Google Sheet.",
+    step2:
+      "Ladda upp din fil för gratis validering (identifierar problem, visar pris).",
+    step3: "Köp rader via PayPal vid behov (första 10 gratis).",
+    step4: "Ladda ner fullständiga resultat med tillagda avstånd i ditt blad.",
+    upload_title: "Ladda upp din fil",
+    pricing_title: "Prissättning",
+    service: "Tjänst",
+    price: "Pris",
+    validation_service: "Validering (dubbletter & fel)",
+    validation_price: "Gratis",
+    additional_rows: "Ytterligare rader (per rad, efter 10 gratis)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Köp 50 rader",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Köp 100 rader",
+    buy_100_price: "9,00 $",
+    footer_text: "Frågor? Kolla",
+    footer_link: "dokumentation",
+    footer_contact: "eller kontakta oss.",
+  },
+  no: {
+    title: "Excel, XLSX, CSV, Google Sheets og regneark masseavstandsberegning",
+    description:
+      "Beregn avstander mellom steder i bulk. Første 10 rader gratis, kjøp flere ved behov!",
+    start_now: "Start nå",
+    toggle_language: "Bytt språk",
+    features_title: "Funksjoner du elsker",
+    feature_supports:
+      "Støtter land, byer, regioner, postadresser, postkoder, flyplasskoder (IATA), what3words, koordinater.",
+    feature_output:
+      "Utdata: Flyavstand, kjøreavstand/varighet, tidsskilnad, bærende, kompassretning.",
+    feature_validation:
+      "Gratis inndatavalidering (duplikater & feiloppdaging).",
+    feature_no_signup: "Ingen registrering kreves — betal med PayPal.",
+    how_it_works_title: "Hvordan det fungerer",
+    step1: "Last ned malen eller bruk din egen XLSX/CSV/Google Sheet.",
+    step2:
+      "Last opp filen for gratis validering (oppdager problemer, viser pris).",
+    step3: "Kjøp rader via PayPal om nødvendig (første 10 gratis).",
+    step4:
+      "Last ned fullstendige resultater med tilføyde avstander i arket ditt.",
+    upload_title: "Last opp filen din",
+    pricing_title: "Prising",
+    service: "Tjeneste",
+    price: "Pris",
+    validation_service: "Validering (duplikater & feil)",
+    validation_price: "Gratis",
+    additional_rows: "Ekstra rader (per rad, etter 10 gratis)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Kjøp 50 rader",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Kjøp 100 rader",
+    buy_100_price: "9,00 $",
+    footer_text: "Spørsmål? Sjekk",
+    footer_link: "dokumentasjon",
+    footer_contact: "eller kontakt oss.",
+  },
+  da: {
+    title:
+      "Excel, XLSX, CSV, Google Sheets og regnearks masseafstandsberigning",
+    description:
+      "Beregn afstande mellem steder i bulk. De første 10 rækker er gratis, køb flere efter behov!",
+    start_now: "Start nu",
+    toggle_language: "Skift sprog",
+    features_title: "Funktioner, du elsker",
+    feature_supports:
+      "Understøtter lande, byer, regioner, postadresser, postnumre, lufthavnskoder (IATA), what3words, koordinater.",
+    feature_output:
+      "Uddata: Flyafstand, køreaflstand/varighed, tidsforskel, bærende, kompasretning.",
+    feature_validation: "Gratis inputvalidering (duplikater & fejlopsætning).",
+    feature_no_signup: "Ingen registrering kræves — betal med PayPal.",
+    how_it_works_title: "Hvordan det virker",
+    step1: "Download skabelonen eller brug din egen XLSX/CSV/Google Sheet.",
+    step2:
+      "Upload din fil til gratis validering (opdager problemer, viser pris).",
+    step3: "Køb rækker via PayPal, hvis nødvendigt (de første 10 gratis).",
+    step4: "Download fulde resultater med tilføjede afstande i dit ark.",
+    upload_title: "Upload din fil",
+    pricing_title: "Priser",
+    service: "Tjeneste",
+    price: "Pris",
+    validation_service: "Validering (duplikater & fejl)",
+    validation_price: "Gratis",
+    additional_rows: "Yderligere rækker (pr. række, efter 10 gratis)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Køb 50 rækker",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Køb 100 rækker",
+    buy_100_price: "9,00 $",
+    footer_text: "Spørgsmål? Tjek",
+    footer_link: "dokumentation",
+    footer_contact: "eller kontakt os.",
+  },
+  fi: {
+    title:
+      "Excel, XLSX, CSV, Google Sheets ja taulukkolaskennan massamatkan laskeminen",
+    description:
+      "Laske etäisyyksiä paikkojen välillä massoittain. Ensimmäiset 10 riviä ilmaisia, osta lisää tarpeen mukaan!",
+    start_now: "Aloita nyt",
+    toggle_language: "Vaihda kieltä",
+    features_title: "Ominaisuuksia, joita rakastat",
+    feature_supports:
+      "Tukee maita, kaupunkeja, alueita, postiosoitteita, postinumeroita, lentokenttäkoodit (IATA), what3words, koordinaatteja.",
+    feature_output:
+      "Tulos: Lentomatka, ajomatka/kesto, aikavaihe, kantama, kompassisuunta.",
+    feature_validation:
+      "Ilmainen syötteen validointi (tuplat & virheiden havaitseminen).",
+    feature_no_signup: "Rekisteröintiä ei vaadita — maksa PayPalilla.",
+    how_it_works_title: "Kuinka se toimii",
+    step1: "Lataa malli tai käytä omaa XLSX/CSV/Google Sheet -tiedostoa.",
+    step2:
+      "Lataa tiedosto ilmaiseen validointiin (havaitsee ongelmia, näyttää hinnan).",
+    step3: "Osta rivejä PayPalilla tarvittaessa (ensimmäiset 10 ilmaisia).",
+    step4: "Lataa täydet tulokset etäisyyksillä lisättynä taulukkoosi.",
+    upload_title: "Lataa tiedostosi",
+    pricing_title: "Hinnoittelu",
+    service: "Palvelu",
+    price: "Hinta",
+    validation_service: "Validointi (tuplat & virheet)",
+    validation_price: "Ilmainen",
+    additional_rows: "Lisärivit (riviä kohden, 10 ilmaisen jälkeen)",
+    additional_rows_price: "0,10 $",
+    buy_50_rows: "Osta 50 riviä",
+    buy_50_price: "5,00 $",
+    buy_100_rows: "Osta 100 riviä",
+    buy_100_price: "9,00 $",
+    footer_text: "Kysymyksiä? Tarkista",
+    footer_link: "dokumentaatio",
+    footer_contact: "tai ota yhteyttä.",
+  },
+};
+
+i18n.use(initReactI18next).init({
+  resources,
+  lng: "en",
+  interpolation: { escapeValue: false },
+});
+
+export default i18n;
