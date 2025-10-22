@@ -1,15 +1,21 @@
 /* src/Landing.css */
-.app {
-  max-width: 1200px;
+.app,
+.hero,
+.features,
+.how-it-works,
+.upload-section,
+.pricing,
+footer {
+  max-width: 900px;
   margin: 0 auto;
-  font-family: "Segoe UI", sans-serif;
+  padding: 20px;
 }
 
 .hero {
-  text-align: center;
   padding: 60px 20px;
   background: linear-gradient(to right, #4285f4, #34a853);
   color: white;
+  text-align: center;
 }
 
 .hero h1 {
@@ -36,15 +42,6 @@
 
 .cta-button:hover {
   background-color: #f0f0f0;
-}
-
-.features,
-.how-it-works,
-.pricing,
-.upload-section {
-  padding: 40px 20px;
-  max-width: 800px;
-  margin: 0 auto;
 }
 
 .features h2,
