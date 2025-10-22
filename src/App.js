@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div className="app">
-      <div className="language-section" style={{ padding: "20px", text-align: "center" }}>
+      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
         <label htmlFor="language-select" className="language-label">
           {t("toggle_language")}:
         </label>
