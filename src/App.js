@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, Suspense } from "react";
 import UploadComponent from "./UploadComponent";
 import "./Landing.css";
@@ -12,14 +11,15 @@ function App() {
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
     setLanguage(newLang);
-    i18n.changeLanguage(newLang).then(() => {
-      console.log(`Language changed to: ${newLang}`);
-    });
+    i18n.changeLanguage(newLang);
   };
 
   return (
     <div className="app">
-      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
+      <div
+        className="language-section"
+        style={{ padding: "20px", textAlign: "center" }}
+      >
         <label htmlFor="language-select" className="language-label">
           {t("toggle_language")}:
         </label>
@@ -44,7 +44,12 @@ function App() {
       <header className="hero">
         <h1>{t("title")}</h1>
         <p>{t("description")}</p>
-        <button className="cta-button" onClick={() => document.getElementById("upload-section").scrollIntoView()}>
+        <button
+          className="cta-button"
+          onClick={() =>
+            document.getElementById("upload-section").scrollIntoView()
+          }
+        >
           {t("start_now")}
         </button>
       </header>
@@ -105,7 +110,13 @@ function App() {
       </section>
 
       <footer>
-        <p>{t("footer_text")} <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link")}</a> {t("footer_contact")}</p>
+        <p>
+          {t("footer_text")}{" "}
+          <a href="https://docs.distance.tools/tools/spreadsheet">
+            {t("footer_link")}
+          </a>{" "}
+          {t("footer_contact")}
+        </p>
       </footer>
     </div>
   );
