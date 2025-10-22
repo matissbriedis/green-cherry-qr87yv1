@@ -7,23 +7,19 @@ import "./i18n";
 
 function App() {
   const { t, i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language || "en"); // Sync with i18n initial language
+  const [language, setLanguage] = useState(i18n.language || "en");
 
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
     setLanguage(newLang);
     i18n.changeLanguage(newLang).then(() => {
-      // Force re-render after language change
       console.log(`Language changed to: ${newLang}`);
     });
   };
 
   return (
     <div className="app">
-      <div
-        className="language-section"
-        style={{ padding: "20px", textAlign: "center" }}
-      >
+      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
         <label htmlFor="language-select" className="language-label">
           {t("toggle_language")}:
         </label>
@@ -48,12 +44,7 @@ function App() {
       <header className="hero">
         <h1>{t("title")}</h1>
         <p>{t("description")}</p>
-        <button
-          className="cta-button"
-          onClick={() =>
-            document.getElementById("upload-section").scrollIntoView()
-          }
-        >
+        <button className="cta-button" onClick={() => document.getElementById("upload-section").scrollIntoView()}>
           {t("start_now")}
         </button>
       </header>
@@ -114,13 +105,7 @@ function App() {
       </section>
 
       <footer>
-        <p>
-          {t("footer_text")}{" "}
-          <a href="https://docs.distance.tools/tools/spreadsheet">
-            {t("footer_link")}
-          </a>{" "}
-          {t("footer_contact")}
-        </p>
+        <p>{t("footer_text")} <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link")}</a> {t("footer_contact")}</p>
       </footer>
     </div>
   );
