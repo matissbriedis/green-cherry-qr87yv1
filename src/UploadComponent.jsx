@@ -10,7 +10,7 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 const GEOAPIFY_API_KEY = "7da23bd96a564a17b6fc360f35c5177e";
 
 function UploadComponent() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [language, setLanguage] = useState("en");
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
@@ -24,7 +24,7 @@ function UploadComponent() {
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     setLanguage(lang);
-    i18n.changeLanguage(lang);
+    // i18n.changeLanguage(lang); // Moved to App.js
   };
 
   const handleFileUpload = (e) => {
@@ -110,17 +110,32 @@ function UploadComponent() {
   };
 
   const geocode = async (address) => {
-    const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-      address
-    )}&apiKey=${GEOAPIFY_API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.features?.[0]?.geometry?.coordinates
-      ? {
-          lat: data.features[0].geometry.coordinates[1],
-          lon: data.features[0].geometry.coordinates[0],
-        }
-      : null;
+    if (address && address.startsWith("///")) {
+      // what3words format (e.g., ///index.home.raft)
+      const w3wUrl = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+        address
+      )}&apiKey=${GEOAPIFY_API_KEY}&type=what3words`;
+      const response = await fetch(w3wUrl);
+      const data = await response.json();
+      return data.features?.[0]?.geometry?.coordinates
+        ? {
+            lat: data.features[0].geometry.coordinates[1],
+            lon: data.features[0].geometry.coordinates[0],
+          }
+        : null;
+    } else {
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+        address
+      )}&apiKey=${GEOAPIFY_API_KEY}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return data.features?.[0]?.geometry?.coordinates
+        ? {
+            lat: data.features[0].geometry.coordinates[1],
+            lon: data.features[0].geometry.coordinates[0],
+          }
+        : null;
+    }
   };
 
   const calculateDistances = async () => {
@@ -137,22 +152,63 @@ function UploadComponent() {
       const to = await geocode(row.To);
 
       if (from && to) {
-        const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
-        const response = await fetch(url);
-        const result = await response.json();
+        // Driving distance and duration
+        const driveUrl = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
+        const driveResponse = await fetch(driveUrl);
+        const driveData = await driveResponse.json();
+        const driveDistance = driveData.features?.[0]?.properties?.distance
+          ? `${(driveData.features[0].properties.distance / 1000).toFixed(
+              2
+            )} km`
+          : "Error";
+        const driveDuration = driveData.features?.[0]?.properties?.time
+          ? `${(driveData.features[0].properties.time / 60).toFixed(0)} min`
+          : "Error";
+
+        // Straight-line (airline) distance
+        const straightUrl = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=straight&apiKey=${GEOAPIFY_API_KEY}`;
+        const straightResponse = await fetch(straightUrl);
+        const straightData = await straightResponse.json();
+        const airlineDistance = straightData.features?.[0]?.properties?.distance
+          ? `${(straightData.features[0].properties.distance / 1000).toFixed(
+              2
+            )} km`
+          : "Error";
+
+        // Bearing and compass direction
+        const lat1 = (from.lat * Math.PI) / 180;
+        const lat2 = (to.lat * Math.PI) / 180;
+        const lon1 = (from.lon * Math.PI) / 180;
+        const lon2 = (to.lon * Math.PI) / 180;
+        const deltaLon = lon2 - lon1;
+        const y = Math.sin(deltaLon) * Math.cos(lat2);
+        const x =
+          Math.cos(lat1) * Math.sin(lat2) -
+          Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLon);
+        const bearing = (Math.atan2(y, x) * 180) / Math.PI;
+        const compass = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"][
+          Math.round((bearing % 360) / 45) % 8
+        ];
+
+        // Time difference (placeholder, requires timezone API)
+        const timeDiff = "N/A";
+
         calculated.push({
           ...row,
-          Distance: result.features?.[0]?.properties?.distance
-            ? `${(result.features[0].properties.distance / 1000).toFixed(2)} km`
-            : "Error",
+          "Driving Distance": driveDistance,
+          "Driving Duration": driveDuration,
+          "Airline Distance": airlineDistance,
+          Bearing: `${bearing.toFixed(1)}°`,
+          Compass: compass,
+          "Time Difference": timeDiff,
         });
       } else {
-        calculated.push({ ...row, Distance: "Geocode failed" });
+        calculated.push({ ...row, "Driving Distance": "Geocode failed" });
       }
     }
     setResults(calculated);
-    setCredits(credits - data.length); // Deduct used rows
-    setValidation(null); // Reset validation after calculation
+    setCredits(credits - data.length);
+    setValidation(null);
   };
 
   const downloadResults = () => {
@@ -197,28 +253,6 @@ function UploadComponent() {
       </div>
 
       {error && <p className="error">{error}</p>}
-
-      <div className="language-section">
-        <label htmlFor="language-select" className="language-label">
-          {t("toggle_language")}:
-        </label>
-        <select
-          id="language-select"
-          value={language}
-          onChange={handleLanguageChange}
-          className="language-select"
-        >
-          <option value="en">English</option>
-          <option value="lv">Latviešu</option>
-          <option value="et">Eesti</option>
-          <option value="lt">Lietuvių</option>
-          <option value="pl">Polski</option>
-          <option value="sv">Svenska</option>
-          <option value="no">Norsk</option>
-          <option value="da">Dansk</option>
-          <option value="fi">Suomi</option>
-        </select>
-      </div>
 
       <div className="upload-section">
         <div className="upload-method-toggle">
@@ -310,6 +344,37 @@ function UploadComponent() {
           </button>
         )}
       </div>
+
+      {results.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>{t("from")}</th>
+              <th>{t("to")}</th>
+              <th>{t("driving_distance")}</th>
+              <th>{t("driving_duration")}</th>
+              <th>{t("airline_distance")}</th>
+              <th>{t("bearing")}</th>
+              <th>{t("compass")}</th>
+              <th>{t("time_difference")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results.map((row, index) => (
+              <tr key={index}>
+                <td>{row.From}</td>
+                <td>{row.To}</td>
+                <td>{row["Driving Distance"]}</td>
+                <td>{row["Driving Duration"]}</td>
+                <td>{row["Airline Distance"]}</td>
+                <td>{row.Bearing}</td>
+                <td>{row.Compass}</td>
+                <td>{row["Time Difference"]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
