@@ -1,0 +1,13 @@
+{
+  "title": "📍 Distance Calculator",
+  "upload": "Upload Your Route File",
+  "download_template": "📄 Download Template",
+  "calculate": "🧮 Calculate Distances",
+  "download_results": "📥 Download Results as Excel",
+  "from": "From",
+  "to": "To",
+  "distance": "Distance",
+  "loading": "Calculating distances...",
+  "toggle_theme": "Toggle theme",
+  "toggle_language": "Switch language"
+}

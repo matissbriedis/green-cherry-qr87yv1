@@ -1,0 +1,13 @@
+{
+  "title": "📍 Attāluma Kalkulators",
+  "upload": "Augšupielādējiet maršruta failu",
+  "download_template": "📄 Lejupielādēt veidni",
+  "calculate": "🧮 Aprēķināt attālumus",
+  "download_results": "📥 Lejupielādēt rezultātus kā Excel",
+  "from": "No",
+  "to": "Uz",
+  "distance": "Attālums",
+  "loading": "Aprēķina attālumus...",
+  "toggle_theme": "Pārslēgt tēmu",
+  "toggle_language": "Mainīt valodu"
+}

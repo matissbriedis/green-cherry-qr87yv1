@@ -1,0 +1,13 @@
+{
+  "title": "📍 Avstandskalkulator",
+  "upload": "Last opp rute filen din",
+  "download_template": "📄 Last ned mal",
+  "calculate": "🧮 Beregn avstander",
+  "download_results": "📥 Last ned resultater som Excel",
+  "from": "Fra",
+  "to": "Til",
+  "distance": "Avstand",
+  "loading": "Beregner avstander...",
+  "toggle_theme": "Bytt tema",
+  "toggle_language": "Bytt språk"
+}

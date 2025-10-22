@@ -1,0 +1,13 @@
+{
+  "title": "📍 Atstumo Skaičiuotuvas",
+  "upload": "Įkelkite savo maršruto failą",
+  "download_template": "📄 Atsisiųsti šabloną",
+  "calculate": "🧮 Skaičiuoti atstumus",
+  "download_results": "📥 Atsisiųsti rezultatus kaip Excel",
+  "from": "Nuo",
+  "to": "Iki",
+  "distance": "Atstumas",
+  "loading": "Skaičiuojami atstumai...",
+  "toggle_theme": "Perjungti temą",
+  "toggle_language": "Keisti kalbą"
+}

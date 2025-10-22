@@ -1,0 +1,13 @@
+{
+  "title": "📍 Kalkulator Dystansu",
+  "upload": "Prześlij plik trasy",
+  "download_template": "📄 Pobierz szablon",
+  "calculate": "🧮 Oblicz dystanse",
+  "download_results": "📥 Pobierz wyniki jako Excel",
+  "from": "Od",
+  "to": "Do",
+  "distance": "Dystans",
+  "loading": "Obliczanie dystansów...",
+  "toggle_theme": "Zmień motyw",
+  "toggle_language": "Zmień język"
+}

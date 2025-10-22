@@ -1,0 +1,291 @@
+/* src/UploadComponent.css */
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.header-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.theme-toggle {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.theme-toggle.light {
+  color: #333;
+}
+.theme-toggle.dark {
+  color: #f9f9f9;
+}
+
+.auth-section {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.auth-button {
+  background-color: #4285f4;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: #3267d6;
+}
+.auth-button.calculate {
+  background-color: #34a853;
+}
+.auth-button.calculate:hover {
+  background-color: #2a8a3e;
+}
+.auth-button.download {
+  background-color: #f4b400;
+}
+.auth-button.download:hover {
+  background-color: #d99b00;
+}
+.auth-button.signup {
+  background-color: #34a853;
+}
+.auth-button.signup:hover {
+  background-color: #2a8a3e;
+}
+
+.auth-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 160px;
+}
+
+.language-section {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.language-label {
+  font-weight: bold;
+}
+.language-select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.upload-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.upload-method-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.method-btn {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.method-btn:hover {
+  background-color: #f0f0f0;
+}
+.method-btn.active {
+  background-color: #4285f4;
+  color: #fff;
+}
+
+.file-input {
+  margin-top: 10px;
+}
+.file-input input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.sheet-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sheet-url-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.action-buttons {
+  margin: 20px 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.action-buttons a {
+  background-color: #4285f4;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.action-buttons a:hover {
+  background-color: #3267d6;
+}
+
+table {
+  margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.payment-notice {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.error {
+  color: #dc3545;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #f8d7da;
+  border-radius: 4px;
+}
+
+.light {
+  background-color: #f9f9f9;
+  color: #1e1e1e;
+}
+.dark {
+  background-color: #1e1e1e;
+  color: #f9f9f9;
+}
+
+.dark .auth-input,
+.dark .language-select,
+.dark .sheet-url-input,
+.dark .file-input input {
+  background-color: #333;
+  color: #f9f9f9;
+  border-color: #555;
+}
+
+.dark table {
+  background-color: #333;
+  color: #f9f9f9;
+}
+.dark th {
+  background-color: #444;
+}
+.dark .payment-notice {
+  background-color: #333;
+  border-color: #555;
+  color: #f9f9f9;
+}
+
+@media (max-width: 600px) {
+  .container {
+    margin: 20px;
+    padding: 15px;
+  }
+  .header-controls {
+    position: static;
+    margin-bottom: 20px;
+  }
+  .auth-form {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .auth-input {
+    width: 100%;
+  }
+  .language-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .upload-method-toggle {
+    flex-direction: column;
+  }
+  .sheet-input {
+    flex-direction: column;
+  }
+  .sheet-url-input {
+    width: 100%;
+  }
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .action-buttons a,
+  .action-buttons button {
+    width: 100%;
+    text-align: center;
+  }
+}

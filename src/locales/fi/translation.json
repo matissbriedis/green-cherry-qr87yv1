@@ -1,0 +1,13 @@
+{
+  "title": "📍 Etäisyyslaskin",
+  "upload": "Lataa reittitiedosto",
+  "download_template": "📄 Lataa malli",
+  "calculate": "🧮 Laske etäisyydet",
+  "download_results": "📥 Lataa tulokset Excelinä",
+  "from": "Mistä",
+  "to": "Minne",
+  "distance": "Etäisyys",
+  "loading": "Lasketaan etäisyyksiä...",
+  "toggle_theme": "Vaihda teema",
+  "toggle_language": "Vaihda kieli"
+}
