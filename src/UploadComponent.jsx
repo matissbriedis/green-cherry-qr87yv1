@@ -5,14 +5,7 @@ import Papa from "papaparse";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 import "./UploadComponent.css";
-import {
-  auth,
-  provider,
-  signInWithPopup,
-  signOut,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-} from "./firebase";
+import { auth, provider, signInWithPopup, signOut } from "./firebase";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const GEOAPIFY_API_KEY = "7da23bd96a564a17b6fc360f35c5177e";
@@ -25,8 +18,6 @@ function UploadComponent() {
   const [darkMode, setDarkMode] = useState(false);
   const [user, setUser] = useState(null);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [sheetUrl, setSheetUrl] = useState("");
   const [uploadMethod, setUploadMethod] = useState("local"); // "local" or "sheets"
@@ -37,54 +28,25 @@ function UploadComponent() {
     i18n.changeLanguage(lang);
   };
 
-  const handleLogin = async (method) => {
+  const handleLogin = async () => {
     try {
-      if (method === "google") {
-        const result = await signInWithPopup(auth, provider);
-        setUser(result.user);
-        console.log("Signed in:", result.user.displayName);
-        alert("Signed in successfully!");
-      } else if (method === "email") {
-        const result = await signInWithEmailAndPassword(auth, email, password);
-        setUser(result.user);
-        console.log("Signed in:", result.user.email);
-        alert("Signed in successfully!");
-        setEmail("");
-        setPassword("");
-        setError("");
-      }
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);
+      console.log(
+        "Signed in/up:",
+        result.user.displayName || result.user.email
+      );
+      alert("Signed in/up successfully with Google!");
     } catch (error) {
       console.error("Login error:", error.message);
-      setError(error.message);
-      alert("Login failed: " + error.message);
-    }
-  };
-
-  const handleSignup = async () => {
-    try {
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      setUser(result.user);
-      console.log("Signed up:", result.user.email);
-      alert("Signed up successfully! You can now log in.");
-      setEmail("");
-      setPassword("");
-      setError("");
-    } catch (error) {
-      console.error("Signup error:", error.message);
-      setError(error.message);
-      alert("Signup failed: " + error.message);
+      setError("Sign in/up failed: " + error.message);
+      alert("Sign in/up failed: " + error.message);
     }
   };
 
   const handleLogout = () => {
     signOut(auth);
     setUser(null);
-    setEmail("");
-    setPassword("");
     setError("");
   };
 
@@ -93,12 +55,16 @@ function UploadComponent() {
     if (!file) return;
 
     const fileType = file.name.split(".").pop().toLowerCase();
+    console.log("Uploading file:", file.name, fileType);
 
     if (fileType === "csv") {
       Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
-        complete: (results) => setData(results.data),
+        complete: (results) => {
+          console.log("Parsed CSV data:", results.data);
+          setData(results.data);
+        },
       });
     } else {
       const reader = new FileReader();
@@ -108,6 +74,7 @@ function UploadComponent() {
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet);
+        console.log("Parsed XLSX data:", jsonData);
         setData(jsonData);
       };
       reader.readAsBinaryString(file);
@@ -128,6 +95,7 @@ function UploadComponent() {
 
     const sheetId = sheetIdMatch[1];
     const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+    console.log("Fetching sheet URL:", csvUrl);
 
     try {
       const response = await fetch(csvUrl);
@@ -139,10 +107,14 @@ function UploadComponent() {
       Papa.parse(csvText, {
         header: true,
         skipEmptyLines: true,
-        complete: (results) => setData(results.data),
+        complete: (results) => {
+          console.log("Parsed sheet data:", results.data);
+          setData(results.data);
+        },
       });
       setError("");
     } catch (err) {
+      console.error("Sheet fetch error:", err);
       setError("Error fetching Google Sheet: " + err.message);
     }
   };
@@ -163,6 +135,7 @@ function UploadComponent() {
 
   const calculateDistances = async () => {
     const limitedData = user || paymentCompleted ? data : data.slice(0, 10);
+    console.log("Calculating distances for:", limitedData.length, "rows");
     const calculated = [];
 
     for (const row of limitedData) {
@@ -184,10 +157,12 @@ function UploadComponent() {
       }
     }
 
+    console.log("Calculated results:", calculated);
     setResults(calculated);
   };
 
   const downloadResults = () => {
+    console.log("Downloading results:", results.length, "rows");
     const worksheet = XLSX.utils.json_to_sheet(results);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
@@ -204,47 +179,20 @@ function UploadComponent() {
         >
           {darkMode ? "☀️" : "🌙"}
         </button>
-      </div>
-
-      <div className="auth-section">
-        {user ? (
+        {user && (
           <button onClick={handleLogout} className="auth-button">
             👤 {user.email || user.displayName}
           </button>
-        ) : (
-          <div className="auth-form">
-            <button
-              onClick={() => handleLogin("google")}
-              className="auth-button"
-            >
-              Sign In/Sign Up
-            </button>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="auth-input"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="auth-input"
-            />
-            <button
-              onClick={() => handleLogin("email")}
-              className="auth-button"
-            >
-              Sign in with Email
-            </button>
-            <button onClick={handleSignup} className="auth-button signup">
-              Sign up
-            </button>
-          </div>
         )}
       </div>
+
+      {!user && (
+        <div className="auth-section">
+          <button onClick={handleLogin} className="auth-button">
+            Sign In/Sign Up
+          </button>
+        </div>
+      )}
 
       {error && <p className="error">{error}</p>}
 

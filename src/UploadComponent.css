@@ -25,29 +25,18 @@
   transition: color 0.3s ease;
 }
 
-.theme-toggle.light {
-  color: #333;
-}
-.theme-toggle.dark {
-  color: #f9f9f9;
-}
+.theme-toggle.light { color: #333; }
+.theme-toggle.dark { color: #f9f9f9; }
 
 .auth-section {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.auth-form {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
+  margin: 20px 0;
+  text-align: center;
 }
 
 .auth-button {
   background-color: #4285f4;
   color: #fff;
-  padding: 10px 16px;
+  padding: 12px 24px;
   border-radius: 20px;
   border: none;
   font-weight: bold;
@@ -57,35 +46,13 @@
   transition: background-color 0.3s ease;
 }
 
-.auth-button:hover {
-  background-color: #3267d6;
-}
-.auth-button.calculate {
-  background-color: #34a853;
-}
-.auth-button.calculate:hover {
-  background-color: #2a8a3e;
-}
-.auth-button.download {
-  background-color: #f4b400;
-}
-.auth-button.download:hover {
-  background-color: #d99b00;
-}
-.auth-button.signup {
-  background-color: #34a853;
-}
-.auth-button.signup:hover {
-  background-color: #2a8a3e;
-}
-
-.auth-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 160px;
-}
+.auth-button:hover { background-color: #3267d6; }
+.auth-button.calculate { background-color: #34a853; }
+.auth-button.calculate:hover { background-color: #2a8a3e; }
+.auth-button.download { background-color: #f4b400; }
+.auth-button.download:hover { background-color: #d99b00; }
+.auth-button.signup { background-color: #34a853; }
+.auth-button.signup:hover { background-color: #2a8a3e; }
 
 .language-section {
   margin: 20px 0;
@@ -94,9 +61,7 @@
   gap: 10px;
 }
 
-.language-label {
-  font-weight: bold;
-}
+.language-label { font-weight: bold; }
 .language-select {
   padding: 8px;
   border: 1px solid #ccc;
@@ -127,22 +92,11 @@
   transition: background-color 0.3s ease;
 }
 
-.method-btn:hover {
-  background-color: #f0f0f0;
-}
-.method-btn.active {
-  background-color: #4285f4;
-  color: #fff;
-}
+.method-btn:hover { background-color: #f0f0f0; }
+.method-btn.active { background-color: #4285f4; color: #fff; }
 
-.file-input {
-  margin-top: 10px;
-}
-.file-input input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+.file-input { margin-top: 10px; }
+.file-input input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
 
 .sheet-input {
   display: flex;
@@ -178,9 +132,7 @@
   transition: background-color 0.3s ease;
 }
 
-.action-buttons a:hover {
-  background-color: #3267d6;
-}
+.action-buttons a:hover { background-color: #3267d6; }
 
 table {
   margin-top: 20px;
@@ -189,17 +141,13 @@ table {
   background-color: #fff;
 }
 
-th,
-td {
+th, td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
-th {
-  background-color: #f5f5f5;
-  font-weight: bold;
-}
+th { background-color: #f5f5f5; font-weight: bold; }
 
 .payment-notice {
   margin-top: 20px;
@@ -218,16 +166,9 @@ th {
   border-radius: 4px;
 }
 
-.light {
-  background-color: #f9f9f9;
-  color: #1e1e1e;
-}
-.dark {
-  background-color: #1e1e1e;
-  color: #f9f9f9;
-}
+.light { background-color: #f9f9f9; color: #1e1e1e; }
+.dark { background-color: #1e1e1e; color: #f9f9f9; }
 
-.dark .auth-input,
 .dark .language-select,
 .dark .sheet-url-input,
 .dark .file-input input {
@@ -236,56 +177,18 @@ th {
   border-color: #555;
 }
 
-.dark table {
-  background-color: #333;
-  color: #f9f9f9;
-}
-.dark th {
-  background-color: #444;
-}
-.dark .payment-notice {
-  background-color: #333;
-  border-color: #555;
-  color: #f9f9f9;
-}
+.dark table { background-color: #333; color: #f9f9f9; }
+.dark th { background-color: #444; }
+.dark .payment-notice { background-color: #333; border-color: #555; color: #f9f9f9; }
 
 @media (max-width: 600px) {
-  .container {
-    margin: 20px;
-    padding: 15px;
-  }
-  .header-controls {
-    position: static;
-    margin-bottom: 20px;
-  }
-  .auth-form {
-    flex-direction: column;
-    gap: 10px;
-    align-items: stretch;
-  }
-  .auth-input {
-    width: 100%;
-  }
-  .language-section {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .upload-method-toggle {
-    flex-direction: column;
-  }
-  .sheet-input {
-    flex-direction: column;
-  }
-  .sheet-url-input {
-    width: 100%;
-  }
-  .action-buttons {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .action-buttons a,
-  .action-buttons button {
-    width: 100%;
-    text-align: center;
-  }
+  .container { margin: 20px; padding: 15px; }
+  .header-controls { position: static; margin-bottom: 20px; }
+  .auth-section { text-align: center; }
+  .language-section { flex-direction: column; gap: 10px; }
+  .upload-method-toggle { flex-direction: column; }
+  .sheet-input { flex-direction: column; }
+  .sheet-url-input { width: 100%; }
+  .action-buttons { flex-direction: column; align-items: stretch; }
+  .action-buttons a, .action-buttons button { width: 100%; text-align: center; }
 }
