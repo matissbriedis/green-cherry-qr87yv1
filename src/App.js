@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import UploadComponent from "./UploadComponent";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
@@ -10,9 +10,9 @@ function App() {
   const [language, setLanguage] = useState("en");
 
   const handleLanguageChange = (e) => {
-    const lang = e.target.value;
-    setLanguage(lang);
-    i18n.changeLanguage(lang);
+    const newLang = e.target.value;
+    setLanguage(newLang);
+    i18n.changeLanguage(newLang); // Update i18n language
   };
 
   return (
@@ -109,4 +109,10 @@ function App() {
   );
 }
 
-export default App;
+const AppWithSuspense = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <App />
+  </Suspense>
+);
+
+export default AppWithSuspense;
