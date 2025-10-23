@@ -2,16 +2,22 @@ import React, { useState, useEffect, Suspense } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
 import "./i18n";
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
+
+const GEOAPIFY_API_KEY = "7da23bd96a564a17b6fc360f35c5177e";
 
 function App() {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
-  const [file, setFile] = useState(null);
+  const [data, setData] = useState([]);
+  const [results, setResults] = useState([]);
+  const [validation, setValidation] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-  const [validationResult, setValidationResult] = useState(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [error, setError] = useState("");
 
-  // Sync language change with i18n and force re-render
   useEffect(() => {
     i18n
       .changeLanguage(language)
@@ -26,56 +32,119 @@ function App() {
   };
 
   const handleDownloadTemplate = () => {
-    console.log("Download template triggered");
     const link = document.createElement("a");
-    link.href = "/distance_template.xlsx"; // Path to file in public/
-    link.download = "distance_template.xlsx"; // Suggested filename
+    link.href = "/distance_template.xlsx";
+    link.download = "distance_template.xlsx";
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link); // Cleanup
-    console.log("Download initiated");
+    document.body.removeChild(link);
+    console.log("Download template triggered");
   };
 
-  const handleFileChange = (e) => {
-    console.log("File selected:", e.target.files[0]);
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setValidationResult(null); // Reset on new file
-    }
-  };
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const handleUpload = async () => {
-    console.log("Upload started, file:", file);
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
     setIsUploading(true);
     setUploadProgress(0);
+    setError("");
 
+    const fileType = file.name.split(".").pop().toLowerCase();
     const interval = setInterval(() => {
       setUploadProgress((prev) => (prev >= 100 ? 100 : prev + 10));
     }, 500);
 
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      // Simulate API call (replace with real endpoint)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setValidationResult({
-        validRows: 10,
-        totalRows: file.size / 1024, // Rough estimate
-        price: "$0.00",
-        issues: ["No duplicates detected"],
+    if (fileType === "csv") {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          setData(results.data);
+          validateData(results.data);
+          clearInterval(interval);
+          setIsUploading(false);
+        },
       });
-    } catch (error) {
-      console.error("Upload failed:", error);
-      setValidationResult({ error: "Upload failed. Please try again." });
-    } finally {
-      clearInterval(interval);
-      setIsUploading(false);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const bstr = evt.target.result;
+        const workbook = XLSX.read(bstr, { type: "binary" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet);
+        setData(jsonData);
+        validateData(jsonData);
+        clearInterval(interval);
+        setIsUploading(false);
+      };
+      reader.readAsBinaryString(file);
     }
+  };
+
+  const validateData = (data) => {
+    const duplicates = data.filter(
+      (row, index) =>
+        data.findIndex(
+          (r, i) => i !== index && r.From === row.From && r.To === row.To
+        ) !== -1
+    );
+    const faults = data.filter((row) => !row.From || !row.To);
+    const price = Math.max(0, (data.length - 10) * 0.1).toFixed(2);
+    setValidation({
+      duplicates: [...new Set(duplicates.map((d) => `${d.From} - ${d.To}`))],
+      faults: faults.length,
+      price,
+    });
+  };
+
+  const calculateDistances = async () => {
+    if (!validation || data.length > 10) {
+      setError(
+        `You need ${validation ? validation.price : 0} credits. Buy more rows!`
+      );
+      return;
+    }
+
+    setIsCalculating(true);
+    const calculated = [];
+    for (const row of data) {
+      const from = await geocode(row.From);
+      const to = await geocode(row.To);
+
+      if (from && to) {
+        const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
+        const response = await fetch(url);
+        const result = await response.json();
+        const km = (result.features[0].properties.distance / 1000).toFixed(2);
+        calculated.push({ ...row, Distance: `${km} km` });
+      } else {
+        calculated.push({ ...row, Distance: "Geocode failed" });
+      }
+    }
+    setResults(calculated);
+    setIsCalculating(false);
+  };
+
+  const geocode = async (address) => {
+    const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+      address
+    )}&apiKey=${GEOAPIFY_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.features && data.features.length > 0) {
+      const coords = data.features[0].geometry.coordinates;
+      return { lat: coords[1], lon: coords[0] };
+    }
+    return null;
+  };
+
+  const downloadResults = () => {
+    if (!results.length) return;
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(results);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
+    XLSX.writeFile(workbook, "calculated_distances.xlsx");
   };
 
   return (
