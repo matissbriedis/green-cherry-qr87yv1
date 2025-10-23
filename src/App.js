@@ -5,7 +5,21 @@ import "./i18n";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
-const GEOAPIFY_API_KEY = "7da23bd96a564a17b6fc360f35c5177e";
+const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY || "7da23bd96a564a17b6fc360f35c5177e";
+
+// Manual sanitization function
+function manualSanitize(input) {
+  if (typeof input !== "string") return input;
+  let sanitized = input.replace(/<[^>]*>/g, "");
+  sanitized = sanitized
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+  return sanitized;
+}
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -19,16 +33,9 @@ function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    i18n
-      .changeLanguage(language)
-      .then(() => {
-        console.log(
-          `Language changed to ${language}, t('title') = ${t("title", {
-            defaultValue: "Fallback Title",
-          })}`
-        );
-      })
-      .catch((err) => console.error("Language change failed:", err));
+    i18n.changeLanguage(language).then(() => {
+      console.log(`Language changed to ${language}, t('title') = ${t("title", { defaultValue: "Fallback Title" })}`);
+    }).catch(err => console.error("Language change failed:", err));
   }, [language, i18n, t]);
 
   const handleLanguageChange = (e) => {
@@ -47,9 +54,23 @@ function App() {
   };
 
   const handleFileUpload = (e) => {
-    console.log("File selected:", e.target.files[0]);
     const file = e.target.files[0];
     if (!file) return;
+
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "text/csv"
+    ];
+    const maxSize = 10 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Invalid file type. Please upload a .xlsx or .csv file.");
+      return;
+    }
+    if (file.size > maxSize) {
+      setError("File size exceeds 10MB. Please upload a smaller file.");
+      return;
+    }
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -89,19 +110,10 @@ function App() {
   };
 
   const validateData = (data) => {
-    const duplicates = data.filter(
-      (row, index) =>
-        data.findIndex(
-          (r, i) => i !== index && r.From === row.From && r.To === row.To
-        ) !== -1
-    );
-    const faults = data.filter((row) => !row.From || !row.To);
-    const price = Math.max(0, (data.length - 10) * 0.1).toFixed(2);
-    setValidation({
-      duplicates: [...new Set(duplicates.map((d) => `${d.From} - ${d.To}`))],
-      faults: faults.length,
-      price: `$${price}`,
-    });
+    const duplicates = data.filter((row, index) => data.findIndex((r, i) => i !== index && r.From === row.From && r.To === row.To) !== -1);
+    const faults = data.filter(row => !row.From || !row.To);
+    const price = Math.max(0, (data.length - 10) * 0.10).toFixed(2);
+    setValidation({ duplicates: [...new Set(duplicates.map(d => `${d.From} - ${d.To}`))], faults: faults.length, price: `$${price}` });
   };
 
   const calculateDistances = async () => {
@@ -124,13 +136,12 @@ function App() {
 
         if (from && to) {
           const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
-          const response = await fetch(url);
+          const response = await fetch(url, { credentials: 'omit' });
+          if (response.status === 429) throw new Error("Rate limit exceeded");
           if (!response.ok) throw new Error("Routing API failed");
           const result = await response.json();
           if (result.features && result.features.length > 0) {
-            const km = (result.features[0].properties.distance / 1000).toFixed(
-              2
-            );
+            const km = (result.features[0].properties.distance / 1000).toFixed(2);
             calculated.push({ ...row, Distance: `${km} km` });
           } else {
             calculated.push({ ...row, Distance: "No route found" });
@@ -149,10 +160,10 @@ function App() {
 
   const geocode = async (address) => {
     try {
-      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-        address
-      )}&apiKey=${GEOAPIFY_API_KEY}`;
-      const response = await fetch(url);
+      const sanitizedAddress = manualSanitize(address);
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(sanitizedAddress)}&apiKey=${GEOAPIFY_API_KEY}`;
+      const response = await fetch(url, { credentials: 'omit' });
+      if (response.status === 429) throw new Error("Rate limit exceeded");
       if (!response.ok) throw new Error("Geocode API failed");
       const data = await response.json();
       if (data.features && data.features.length > 0) {
@@ -180,10 +191,7 @@ function App() {
 
   return (
     <div className="app">
-      <div
-        className="language-section"
-        style={{ padding: "20px", textAlign: "center" }}
-      >
+      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
         <label htmlFor="language-select" className="language-label">
           {t("toggle_language", { defaultValue: "Toggle Language" })}:
         </label>
@@ -201,24 +209,9 @@ function App() {
       </div>
 
       <header className="hero">
-        <h1>
-          {t("title", {
-            defaultValue:
-              "Excel, XLSX, CSV, Google Sheets & Spreadsheet Bulk Distance Calculation",
-          })}
-        </h1>
-        <p>
-          {t("description", {
-            defaultValue:
-              "Calculate distances between locations in bulk. First 10 rows free, buy more as needed!",
-          })}
-        </p>
-        <button
-          className="cta-button"
-          onClick={() =>
-            document.getElementById("upload-section").scrollIntoView()
-          }
-        >
+        <h1>{t("title", { defaultValue: "Excel, XLSX, CSV, Google Sheets & Spreadsheet Bulk Distance Calculation" })}</h1>
+        <p>{t("description", { defaultValue: "Calculate distances between locations in bulk. First 10 rows free, buy more as needed!" })}</p>
+        <button className="cta-button" onClick={() => document.getElementById("upload-section").scrollIntoView()}>
           {t("start_now", { defaultValue: "Start Now" })}
         </button>
       </header>
@@ -226,83 +219,33 @@ function App() {
       <section className="features">
         <h2>{t("features_title", { defaultValue: "Features You Love" })}</h2>
         <ul>
-          <li>
-            {t("feature_supports", {
-              defaultValue:
-                "Supports countries, cities, regions, postal addresses, postcodes, airport codes (IATA), what3words, coordinates.",
-            })}
-          </li>
-          <li>
-            {t("feature_output", {
-              defaultValue:
-                "Output: Airline distance, driving distance/duration, time difference, bearing, compass direction.",
-            })}
-          </li>
-          <li>
-            {t("feature_validation", {
-              defaultValue:
-                "Free input validation (duplicates & fault detection).",
-            })}
-          </li>
-          <li>
-            {t("feature_no_signup", {
-              defaultValue: "No sign-up required—pay per use with PayPal.",
-            })}
-          </li>
+          <li>{t("feature_supports", { defaultValue: "Supports countries, cities, regions, postal addresses, postcodes, airport codes (IATA), what3words, coordinates." })}</li>
+          <li>{t("feature_output", { defaultValue: "Output: Airline distance, driving distance/duration, time difference, bearing, compass direction." })}</li>
+          <li>{t("feature_validation", { defaultValue: "Free input validation (duplicates & fault detection)." })}</li>
+          <li>{t("feature_no_signup", { defaultValue: "No sign-up required—pay per use with PayPal." })}</li>
         </ul>
       </section>
 
       <section className="how-it-works">
         <h2>{t("how_it_works_title", { defaultValue: "How It Works" })}</h2>
         <ol>
-          <li>
-            {t("step1", {
-              defaultValue:
-                "Download the template or use your own XLSX/CSV/Google Sheet.",
-            })}
-          </li>
-          <li>
-            {t("step2", {
-              defaultValue:
-                "Upload your file for free validation (detects issues, shows price).",
-            })}
-          </li>
-          <li>
-            {t("step3", {
-              defaultValue: "Buy rows via PayPal if needed (first 10 free).",
-            })}
-          </li>
-          <li>
-            {t("step4", {
-              defaultValue:
-                "Download full results with distances added to your sheet.",
-            })}
-          </li>
+          <li>{t("step1", { defaultValue: "Download the template or use your own XLSX/CSV/Google Sheet." })}</li>
+          <li>{t("step2", { defaultValue: "Upload your file for free validation (detects issues, shows price)." })}</li>
+          <li>{t("step3", { defaultValue: "Buy rows via PayPal if needed (first 10 free)." })}</li>
+          <li>{t("step4", { defaultValue: "Download full results with distances added to your sheet." })}</li>
         </ol>
       </section>
 
       <section id="upload-section" className="upload-section">
         <h2>{t("upload_title", { defaultValue: "Upload Your File" })}</h2>
         <div className="upload-container">
-          <input
-            type="file"
-            accept=".xlsx,.csv"
-            onChange={handleFileUpload}
-            disabled={isUploading}
-          />
-          <button
-            className="cta-button"
-            onClick={handleFileUpload}
-            disabled={isUploading || !data.length}
-          >
+          <input type="file" accept=".xlsx,.csv" onChange={handleFileUpload} disabled={isUploading} />
+          <button className="cta-button" onClick={handleFileUpload} disabled={isUploading || !data.length}>
             {t("upload", { defaultValue: "Upload" })}
           </button>
           {isUploading && (
             <div className="progress-bar">
-              <div
-                className="progress"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+              <div className="progress" style={{ width: `${uploadProgress}%` }}></div>
             </div>
           )}
           {validation && (
@@ -316,11 +259,7 @@ function App() {
                   <p>Duplicates: {validation.duplicates.length || "None"}</p>
                   <p>Faults: {validation.faults || "None"}</p>
                   <p>Price: {validation.price || "$0.00"}</p>
-                  <button
-                    className="cta-button"
-                    onClick={calculateDistances}
-                    disabled={isCalculating}
-                  >
+                  <button className="cta-button" onClick={calculateDistances} disabled={isCalculating}>
                     {t("calculate", { defaultValue: "Calculate Distances" })}
                   </button>
                 </div>
@@ -328,19 +267,11 @@ function App() {
             </div>
           )}
           {results.length > 0 && (
-            <button
-              className="cta-button"
-              onClick={downloadResults}
-              style={{ marginTop: "15px" }}
-            >
+            <button className="cta-button" onClick={downloadResults} style={{ marginTop: "15px" }}>
               {t("download_results", { defaultValue: "Download Results" })}
             </button>
           )}
-          <button
-            className="cta-button"
-            onClick={handleDownloadTemplate}
-            style={{ marginTop: "15px" }}
-          >
+          <button className="cta-button" onClick={handleDownloadTemplate} style={{ marginTop: "15px" }}>
             {t("download_template", { defaultValue: "Download Template" })}
           </button>
         </div>
@@ -357,19 +288,11 @@ function App() {
           </thead>
           <tbody>
             <tr>
-              <td>
-                {t("validation_service", {
-                  defaultValue: "Validation (duplicates & faults)",
-                })}
-              </td>
+              <td>{t("validation_service", { defaultValue: "Validation (duplicates & faults)" })}</td>
               <td>{t("validation_price", { defaultValue: "Free" })}</td>
             </tr>
             <tr>
-              <td>
-                {t("additional_rows", {
-                  defaultValue: "Additional Rows (per row, after 10 free)",
-                })}
-              </td>
+              <td>{t("additional_rows", { defaultValue: "Additional Rows (per row, after 10 free)" })}</td>
               <td>{t("additional_rows_price", { defaultValue: "$0.10" })}</td>
             </tr>
             <tr>
@@ -385,13 +308,7 @@ function App() {
       </section>
 
       <footer>
-        <p>
-          {t("footer_text", { defaultValue: "Questions? Check" })}{" "}
-          <a href="https://docs.distance.tools/tools/spreadsheet">
-            {t("footer_link", { defaultValue: "documentation" })}
-          </a>{" "}
-          {t("footer_contact", { defaultValue: "or contact us." })}
-        </p>
+        <p>{t("footer_text", { defaultValue: "Questions? Check" })} <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link", { defaultValue: "documentation" })}</a> {t("footer_contact", { defaultValue: "or contact us." })}</p>
       </footer>
     </div>
   );
