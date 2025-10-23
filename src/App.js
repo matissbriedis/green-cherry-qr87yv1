@@ -32,16 +32,18 @@ function App() {
   };
 
   const handleDownloadTemplate = () => {
+    console.log("Download template triggered");
     const link = document.createElement("a");
     link.href = "/distance_template.xlsx";
     link.download = "distance_template.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    console.log("Download template triggered");
+    console.log("Download initiated");
   };
 
   const handleFileUpload = (e) => {
+    console.log("File selected:", e.target.files[0]);
     const file = e.target.files[0];
     if (!file) return;
 
@@ -94,32 +96,41 @@ function App() {
     setValidation({
       duplicates: [...new Set(duplicates.map((d) => `${d.From} - ${d.To}`))],
       faults: faults.length,
-      price,
+      price: `$${price}`,
     });
   };
 
   const calculateDistances = async () => {
-    if (!validation || data.length > 10) {
-      setError(
-        `You need ${validation ? validation.price : 0} credits. Buy more rows!`
-      );
+    if (!validation || data.length === 0) {
+      setError("No data to calculate or validation failed.");
+      return;
+    }
+    if (data.length > 10 && parseFloat(validation.price.replace("$", "")) > 0) {
+      setError("Please purchase additional rows.");
       return;
     }
 
     setIsCalculating(true);
+    setError("");
     const calculated = [];
     for (const row of data) {
-      const from = await geocode(row.From);
-      const to = await geocode(row.To);
+      try {
+        const from = await geocode(row.From);
+        const to = await geocode(row.To);
 
-      if (from && to) {
-        const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
-        const response = await fetch(url);
-        const result = await response.json();
-        const km = (result.features[0].properties.distance / 1000).toFixed(2);
-        calculated.push({ ...row, Distance: `${km} km` });
-      } else {
-        calculated.push({ ...row, Distance: "Geocode failed" });
+        if (from && to) {
+          const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Routing API failed");
+          const result = await response.json();
+          const km = (result.features[0].properties.distance / 1000).toFixed(2);
+          calculated.push({ ...row, Distance: `${km} km` });
+        } else {
+          calculated.push({ ...row, Distance: "Geocode failed" });
+        }
+      } catch (err) {
+        console.error("Calculation error for row:", row, err);
+        calculated.push({ ...row, Distance: "Error" });
       }
     }
     setResults(calculated);
@@ -127,24 +138,34 @@ function App() {
   };
 
   const geocode = async (address) => {
-    const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-      address
-    )}&apiKey=${GEOAPIFY_API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    if (data.features && data.features.length > 0) {
-      const coords = data.features[0].geometry.coordinates;
-      return { lat: coords[1], lon: coords[0] };
+    try {
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+        address
+      )}&apiKey=${GEOAPIFY_API_KEY}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Geocode API failed");
+      const data = await response.json();
+      if (data.features && data.features.length > 0) {
+        const coords = data.features[0].geometry.coordinates;
+        return { lat: coords[1], lon: coords[0] };
+      }
+      return null;
+    } catch (err) {
+      console.error("Geocode error:", err);
+      return null;
     }
-    return null;
   };
 
   const downloadResults = () => {
-    if (!results.length) return;
+    if (!results.length) {
+      console.log("No results to download");
+      return;
+    }
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(results);
     XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
     XLSX.writeFile(workbook, "calculated_distances.xlsx");
+    console.log("Results downloaded");
   };
 
   return (
@@ -256,13 +277,13 @@ function App() {
           <input
             type="file"
             accept=".xlsx,.csv"
-            onChange={handleFileChange}
+            onChange={handleFileUpload}
             disabled={isUploading}
           />
           <button
             className="cta-button"
-            onClick={handleUpload}
-            disabled={isUploading || !file}
+            onClick={handleFileUpload}
+            disabled={isUploading || !data.length}
           >
             {t("upload", { defaultValue: "Upload" })}
           </button>
@@ -274,20 +295,36 @@ function App() {
               ></div>
             </div>
           )}
-          {validationResult && (
+          {validation && (
             <div className="validation-result">
               <h3>Validation Result</h3>
-              {validationResult.error ? (
-                <p style={{ color: "red" }}>{validationResult.error}</p>
+              {error ? (
+                <p style={{ color: "red" }}>{error}</p>
               ) : (
                 <div>
-                  <p>Valid Rows: {validationResult.validRows}</p>
-                  <p>Total Rows: {validationResult.totalRows.toFixed(2)} KB</p>
-                  <p>Price: {validationResult.price}</p>
-                  <p>Issues: {validationResult.issues.join(", ")}</p>
+                  <p>Valid Rows: {data.length}</p>
+                  <p>Duplicates: {validation.duplicates.length || "None"}</p>
+                  <p>Faults: {validation.faults || "None"}</p>
+                  <p>Price: {validation.price || "$0.00"}</p>
+                  <button
+                    className="cta-button"
+                    onClick={calculateDistances}
+                    disabled={isCalculating}
+                  >
+                    {t("calculate", { defaultValue: "Calculate Distances" })}
+                  </button>
                 </div>
               )}
             </div>
+          )}
+          {results.length > 0 && (
+            <button
+              className="cta-button"
+              onClick={downloadResults}
+              style={{ marginTop: "15px" }}
+            >
+              {t("download_results", { defaultValue: "Download Results" })}
+            </button>
           )}
           <button
             className="cta-button"

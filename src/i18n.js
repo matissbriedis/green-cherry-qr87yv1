@@ -25,6 +25,8 @@ const resources = {
     upload_title: "Upload Your File",
     upload: "Upload",
     download_template: "Download Template",
+    calculate: "Calculate Distances",
+    download_results: "Download Results",
     pricing_title: "Pricing",
     service: "Service",
     price: "Price",
@@ -64,6 +66,8 @@ const resources = {
     upload_title: "Ladda upp din fil",
     upload: "Ladda upp",
     download_template: "Ladda ner mall",
+    calculate: "Beräkna avstånd",
+    download_results: "Ladda ner resultat",
     pricing_title: "Prissättning",
     service: "Tjänst",
     price: "Pris",
@@ -103,6 +107,8 @@ const resources = {
     upload_title: "Last opp filen din",
     upload: "Last opp",
     download_template: "Last ned mal",
+    calculate: "Beregn avstander",
+    download_results: "Last ned resultater",
     pricing_title: "Prising",
     service: "Tjeneste",
     price: "Pris",
@@ -140,6 +146,8 @@ const resources = {
     upload_title: "Upload din fil",
     upload: "Upload",
     download_template: "Download skabelon",
+    calculate: "Beregn afstande",
+    download_results: "Download resultater",
     pricing_title: "Priser",
     service: "Tjeneste",
     price: "Pris",
@@ -166,7 +174,12 @@ i18n
     interpolation: { escapeValue: false },
     debug: true,
   })
-  .then(() => console.log("i18n initialized successfully"))
+  .then(() =>
+    console.log(
+      "i18n initialized successfully with resources:",
+      Object.keys(resources)
+    )
+  )
   .catch((err) => console.error("i18n initialization failed:", err));
 
 export default i18n;
