@@ -115,13 +115,12 @@ const resources = {
     buy_100_rows: "Kjøp 100 rader",
     buy_100_price: "$9.00",
     footer_text: "Spørsmål? Sjekk",
-    footer_link: "dokumentation",
+    footer_link: "dokumentasjon",
     footer_contact: "eller kontakt oss.",
   },
   da: {
     toggle_language: "Skift sprog",
-    title:
-      "Excel, XLSX, CSV, Google Sheets og regnearks masseafstandsberigning",
+    title: "Excel, XLSX, CSV, Google Sheets og regneark masseafstandsberigning",
     description:
       "Beregn afstande mellem steder i bulk. De første 10 rækker er gratis, køb flere efter behov!",
     start_now: "Start nu",
@@ -167,12 +166,7 @@ i18n
     interpolation: { escapeValue: false },
     debug: true,
   })
-  .then(() =>
-    console.log(
-      "i18n initialized successfully with resources:",
-      Object.keys(resources)
-    )
-  )
+  .then(() => console.log("i18n initialized successfully"))
   .catch((err) => console.error("i18n initialization failed:", err));
 
 export default i18n;
