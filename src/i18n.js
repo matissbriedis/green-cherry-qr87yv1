@@ -3,10 +3,10 @@ import { initReactI18next } from "react-i18next";
 
 const resources = {
   en: {
+    toggle_language: "Toggle Language",
     title: "Excel, XLSX, CSV, Google Sheets & Spreadsheet Bulk Distance Calculation",
     description: "Calculate distances between locations in bulk. First 10 rows free, buy more as needed!",
     start_now: "Start Now",
-    toggle_language: "Toggle Language",
     features_title: "Features You Love",
     feature_supports: "Supports countries, cities, regions, postal addresses, postcodes, airport codes (IATA), what3words, coordinates.",
     feature_output: "Output: Airline distance, driving distance/duration, time difference, bearing, compass direction.",
@@ -18,7 +18,8 @@ const resources = {
     step3: "Buy rows via PayPal if needed (first 10 free).",
     step4: "Download full results with distances added to your sheet.",
     upload_title: "Upload Your File",
-    download_template: "Download Template", // Added for the button
+    upload: "Upload",
+    download_template: "Download Template",
     pricing_title: "Pricing",
     service: "Service",
     price: "Price",
@@ -32,13 +33,13 @@ const resources = {
     buy_100_price: "$9.00",
     footer_text: "Questions? Check",
     footer_link: "documentation",
-    footer_contact: "or contact us."
+    footer_contact: "or contact us.",
   },
   sv: {
+    toggle_language: "Byt språk",
     title: "Excel, XLSX, CSV, Google Sheets och kalkylblads massavståndsberäkning",
     description: "Beräkna avstånd mellan platser i bulk. Första 10 rader gratis, köp fler vid behov!",
     start_now: "Börja nu",
-    toggle_language: "Byt språk",
     features_title: "Funktioner du älskar",
     feature_supports: "Stöder länder, städer, regioner, postadresser, postnummer, flygplatskoder (IATA), what3words, koordinater.",
     feature_output: "Utskrift: Flygavstånd, köravstånd/tid, tidsdifference, bäring, kompassriktning.",
@@ -50,7 +51,8 @@ const resources = {
     step3: "Köp rader via PayPal vid behov (första 10 gratis).",
     step4: "Ladda ner fullständiga resultat med tillagda avstånd i ditt blad.",
     upload_title: "Ladda upp din fil",
-    download_template: "Ladda ner mall", // Swedish translation
+    upload: "Ladda upp",
+    download_template: "Ladda ner mall",
     pricing_title: "Prissättning",
     service: "Tjänst",
     price: "Pris",
@@ -64,13 +66,13 @@ const resources = {
     buy_100_price: "$9.00",
     footer_text: "Frågor? Kolla",
     footer_link: "dokumentation",
-    footer_contact: "eller kontakta oss."
+    footer_contact: "eller kontakta oss.",
   },
   no: {
+    toggle_language: "Bytt språk",
     title: "Excel, XLSX, CSV, Google Sheets og regneark masseavstandsberegning",
     description: "Beregn avstander mellom steder i bulk. Første 10 rader gratis, kjøp flere ved behov!",
     start_now: "Start nå",
-    toggle_language: "Bytt språk",
     features_title: "Funksjoner du elsker",
     feature_supports: "Støtter land, byer, regioner, postadresser, postkoder, flyplasskoder (IATA), what3words, koordinater.",
     feature_output: "Utdata: Flyavstand, kjøreavstand/varighet, tidsskilnad, bærende, kompassretning.",
@@ -82,7 +84,8 @@ const resources = {
     step3: "Kjøp rader via PayPal om nødvendig (første 10 gratis).",
     step4: "Last ned fullstendige resultater med tilføyde avstander i arket ditt.",
     upload_title: "Last opp filen din",
-    download_template: "Last ned mal", // Norwegian translation
+    upload: "Last opp",
+    download_template: "Last ned mal",
     pricing_title: "Prising",
     service: "Tjeneste",
     price: "Pris",
@@ -96,16 +99,16 @@ const resources = {
     buy_100_price: "$9.00",
     footer_text: "Spørsmål? Sjekk",
     footer_link: "dokumentasjon",
-    footer_contact: "eller kontakt oss."
+    footer_contact: "eller kontakt oss.",
   },
   da: {
+    toggle_language: "Skift sprog",
     title: "Excel, XLSX, CSV, Google Sheets og regnearks masseafstandsberigning",
     description: "Beregn afstande mellem steder i bulk. De første 10 rækker er gratis, køb flere efter behov!",
     start_now: "Start nu",
-    toggle_language: "Skift sprog",
     features_title: "Funktioner, du elsker",
     feature_supports: "Understøtter lande, byer, regioner, postadresser, postnumre, lufthavnskoder (IATA), what3words, koordinater.",
-    feature_output: "Uddata: Flyafstand, køreaflstand/varighed, tidsforskel, bærende, kompasretning.",
+    feature_output: "Uddata: Flyafstand, køreaflstand/varighed, tidsforskel, bærende, kompassretning.",
     feature_validation: "Gratis inputvalidering (duplikater & fejlopsætning).",
     feature_no_signup: "Ingen registrering kræves — betal med PayPal.",
     how_it_works_title: "Hvordan det virker",
@@ -114,7 +117,8 @@ const resources = {
     step3: "Køb rækker via PayPal, hvis nødvendigt (de første 10 gratis).",
     step4: "Download fulde resultater med tilføjede afstande i dit ark.",
     upload_title: "Upload din fil",
-    download_template: "Download skabelon", // Danish translation
+    upload: "Upload",
+    download_template: "Download skabelon",
     pricing_title: "Priser",
     service: "Tjeneste",
     price: "Pris",
@@ -128,18 +132,20 @@ const resources = {
     buy_100_price: "$9.00",
     footer_text: "Spørgsmål? Tjek",
     footer_link: "dokumentation",
-    footer_contact: "eller kontakt os."
-  }
+    footer_contact: "eller kontakt os.",
+  },
 };
 
 i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "en", // Default language
-    fallbackLng: "en", // Fallback to English if language not available
-    interpolation: { escapeValue: false }, // No need to escape values in React
-    debug: true, // Enable debug logs to troubleshoot toggle issues
-  });
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+    debug: true,
+  })
+  .then(() => console.log("i18n initialized successfully"))
+  .catch(err => console.error("i18n initialization failed:", err));
 
 export default i18n;
