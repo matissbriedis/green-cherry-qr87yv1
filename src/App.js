@@ -18,14 +18,17 @@ function App() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState("");
 
+  // Sync language with i18n and force re-render
   useEffect(() => {
     i18n
       .changeLanguage(language)
       .then(() => {
-        console.log(`Language changed to ${language}`);
+        console.log(
+          `Language changed to ${language}, t('title') = ${t("title")}`
+        );
       })
       .catch((err) => console.error("Language change failed:", err));
-  }, [language, i18n]);
+  }, [language, i18n, t]); // Added t to dependency array
 
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
