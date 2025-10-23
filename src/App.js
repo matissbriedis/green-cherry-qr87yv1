@@ -1,12 +1,20 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import sanitizeHtml from "sanitize-html";
 
-const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY || "7da23bd96a564a17b6fc360f35c5177e";
+const GEOAPIFY_API_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
+
+if (!GEOAPIFY_API_KEY) {
+  console.error("GEOAPIFY_API_KEY is missing. Add it in Vercel > Settings > Environment Variables.");
+}
+
+function clean(str) {
+  if (!str) return "";
+  return str.replace(/[<>&"']/g, "").trim();
+}
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -20,42 +28,36 @@ function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    i18n.changeLanguage(language).then(() => {
-      console.log(`Language changed to ${language}, t('title') = ${t("title", { defaultValue: "Fallback Title" })}`);
-    }).catch(err => console.error("Language change failed:", err));
-  }, [language, i18n, t]);
+    i18n.changeLanguage(language);
+  }, [language, i18n]);
 
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
   };
 
   const handleDownloadTemplate = () => {
-    console.log("Download template triggered");
     const link = document.createElement("a");
     link.href = "/distance_template.xlsx";
     link.download = "distance_template.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    console.log("Download initiated");
   };
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const allowedTypes = [
+    const allowed = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "text/csv"
     ];
-    const maxSize = 10 * 1024 * 1024;
-
-    if (!allowedTypes.includes(file.type)) {
-      setError("Invalid file type. Please upload a .xlsx or .csv file.");
+    if (!allowed.includes(file.type)) {
+      setError("Only .xlsx or .csv files allowed.");
       return;
     }
-    if (file.size > maxSize) {
-      setError("File size exceeds 10MB. Please upload a smaller file.");
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File too big. Max 10 MB.");
       return;
     }
 
@@ -63,49 +65,58 @@ function App() {
     setUploadProgress(0);
     setError("");
 
-    const fileType = file.name.split(".").pop().toLowerCase();
     const interval = setInterval(() => {
       setUploadProgress((prev) => (prev >= 100 ? 100 : prev + 10));
     }, 500);
 
-    if (fileType === "csv") {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          setData(results.data);
-          validateData(results.data);
-          clearInterval(interval);
-          setIsUploading(false);
-        },
-      });
-    } else {
-      const reader = new FileReader();
-      reader.onload = (evt) => {
-        const bstr = evt.target.result;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      let jsonData = [];
+
+      if (file.type.includes("csv")) {
+        const txt = new TextDecoder().decode(new Uint8Array(bstr));
+        jsonData = Papa.parse(txt, { header: true, skipEmptyLines: true }).data;
+      } else {
         const workbook = XLSX.read(bstr, { type: "binary" });
-        const sheetName = workbook.SheetNames[0];
-        const sheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(sheet);
-        setData(jsonData);
-        validateData(jsonData);
-        clearInterval(interval);
-        setIsUploading(false);
-      };
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        jsonData = XLSX.utils.sheet_to_json(sheet);
+      }
+
+      const safeData = jsonData.map(row => ({
+        From: clean(row.From),
+        To: clean(row.To)
+      }));
+
+      setData(safeData);
+      validateData(safeData);
+      clearInterval(interval);
+      setIsUploading(false);
+    };
+
+    if (file.type.includes("csv")) {
+      reader.readAsArrayBuffer(file);
+    } else {
       reader.readAsBinaryString(file);
     }
   };
 
   const validateData = (data) => {
-    const duplicates = data.filter((row, index) => data.findIndex((r, i) => i !== index && r.From === row.From && r.To === row.To) !== -1);
-    const faults = data.filter(row => !row.From || !row.To);
+    const duplicates = data
+      .filter((row, index) => data.findIndex((r, i) => i !== index && r.From === row.From && r.To === row.To) !== -1)
+      .map(d => `${d.From} - ${d.To}`);
+    const faults = data.filter(row => !row.From || !row.To).length;
     const price = Math.max(0, (data.length - 10) * 0.10).toFixed(2);
-    setValidation({ duplicates: [...new Set(duplicates.map(d => `${d.From} - ${d.To}`))], faults: faults.length, price: `$${price}` });
+    setValidation({ duplicates: [...new Set(duplicates)], faults, price: `$${price}` });
   };
 
   const calculateDistances = async () => {
+    if (!GEOAPIFY_API_KEY) {
+      setError("API key missing. Contact admin.");
+      return;
+    }
     if (!validation || data.length === 0) {
-      setError("No data to calculate or validation failed.");
+      setError("No data to calculate.");
       return;
     }
     if (data.length > 10 && parseFloat(validation.price.replace("$", "")) > 0) {
@@ -116,6 +127,7 @@ function App() {
     setIsCalculating(true);
     setError("");
     const calculated = [];
+
     for (const row of data) {
       try {
         const from = await geocode(row.From);
@@ -123,21 +135,18 @@ function App() {
 
         if (from && to) {
           const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
-          const response = await fetch(url, { credentials: 'omit' });
-          if (response.status === 429) throw new Error("Rate limit exceeded");
-          if (!response.ok) throw new Error("Routing API failed");
+          const response = await fetch(url, { credentials: "omit" });
+          if (response.status === 429) throw new Error("Rate limit");
+          if (!response.ok) throw new Error("Routing failed");
           const result = await response.json();
-          if (result.features && result.features.length > 0) {
-            const km = (result.features[0].properties.distance / 1000).toFixed(2);
-            calculated.push({ ...row, Distance: `${km} km` });
-          } else {
-            calculated.push({ ...row, Distance: "No route found" });
-          }
+          const km = result.features?.[0]?.properties?.distance
+            ? (result.features[0].properties.distance / 1000).toFixed(2)
+            : "No route";
+          calculated.push({ ...row, Distance: `${km} km` });
         } else {
           calculated.push({ ...row, Distance: "Geocode failed" });
         }
       } catch (err) {
-        console.error("Calculation error for row:", row, err);
         calculated.push({ ...row, Distance: "Error" });
       }
     }
@@ -146,41 +155,36 @@ function App() {
   };
 
   const geocode = async (address) => {
+    if (!GEOAPIFY_API_KEY) return null;
     try {
-      const sanitizedAddress = sanitizeHtml(address, { allowedTags: [], allowedAttributes: {} });
-      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(sanitizedAddress)}&apiKey=${GEOAPIFY_API_KEY}`;
-      const response = await fetch(url, { credentials: 'omit' });
-      if (response.status === 429) throw new Error("Rate limit exceeded");
-      if (!response.ok) throw new Error("Geocode API failed");
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=${GEOAPIFY_API_KEY}`;
+      const response = await fetch(url, { credentials: "omit" });
+      if (response.status === 429) throw new Error("Rate limit");
+      if (!response.ok) throw new Error("Geocode failed");
       const data = await response.json();
-      if (data.features && data.features.length > 0) {
-        const coords = data.features[0].geometry.coordinates;
-        return { lat: coords[1], lon: coords[0] };
+      if (data.features?.[0]?.geometry?.coordinates) {
+        const [lon, lat] = data.features[0].geometry.coordinates;
+        return { lat, lon };
       }
       return null;
     } catch (err) {
-      console.error("Geocode error:", err);
       return null;
     }
   };
 
   const downloadResults = () => {
-    if (!results.length) {
-      console.log("No results to download");
-      return;
-    }
+    if (!results.length) return;
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(results);
     XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
     XLSX.writeFile(workbook, "calculated_distances.xlsx");
-    console.log("Results downloaded");
   };
 
   return (
     <div className="app">
       <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
         <label htmlFor="language-select" className="language-label">
-          {t("toggle_language", { defaultValue: "Toggle Language" })}:
+          {t("toggle_language")}:
         </label>
         <select
           id="language-select"
@@ -196,40 +200,37 @@ function App() {
       </div>
 
       <header className="hero">
-        <h1>{t("title", { defaultValue: "Excel, XLSX, CSV, Google Sheets & Spreadsheet Bulk Distance Calculation" })}</h1>
-        <p>{t("description", { defaultValue: "Calculate distances between locations in bulk. First 10 rows free, buy more as needed!" })}</p>
+        <h1>{t("title")}</h1>
+        <p>{t("description")}</p>
         <button className="cta-button" onClick={() => document.getElementById("upload-section").scrollIntoView()}>
-          {t("start_now", { defaultValue: "Start Now" })}
+          {t("start_now")}
         </button>
       </header>
 
       <section className="features">
-        <h2>{t("features_title", { defaultValue: "Features You Love" })}</h2>
+        <h2>{t("features_title")}</h2>
         <ul>
-          <li>{t("feature_supports", { defaultValue: "Supports countries, cities, regions, postal addresses, postcodes, airport codes (IATA), what3words, coordinates." })}</li>
-          <li>{t("feature_output", { defaultValue: "Output: Airline distance, driving distance/duration, time difference, bearing, compass direction." })}</li>
-          <li>{t("feature_validation", { defaultValue: "Free input validation (duplicates & fault detection)." })}</li>
-          <li>{t("feature_no_signup", { defaultValue: "No sign-up required—pay per use with PayPal." })}</li>
+          <li>{t("feature_supports")}</li>
+          <li>{t("feature_output")}</li>
+          <li>{t("feature_validation")}</li>
+          <li>{t("feature_no_signup")}</li>
         </ul>
       </section>
 
       <section className="how-it-works">
-        <h2>{t("how_it_works_title", { defaultValue: "How It Works" })}</h2>
+        <h2>{t("how_it_works_title")}</h2>
         <ol>
-          <li>{t("step1", { defaultValue: "Download the template or use your own XLSX/CSV/Google Sheet." })}</li>
-          <li>{t("step2", { defaultValue: "Upload your file for free validation (detects issues, shows price)." })}</li>
-          <li>{t("step3", { defaultValue: "Buy rows via PayPal if needed (first 10 free)." })}</li>
-          <li>{t("step4", { defaultValue: "Download full results with distances added to your sheet." })}</li>
+          <li>{t("step1")}</li>
+          <li>{t("step2")}</li>
+          <li>{t("step3")}</li>
+          <li>{t("step4")}</li>
         </ol>
       </section>
 
       <section id="upload-section" className="upload-section">
-        <h2>{t("upload_title", { defaultValue: "Upload Your File" })}</h2>
+        <h2>{t("upload_title")}</h2>
         <div className="upload-container">
           <input type="file" accept=".xlsx,.csv" onChange={handleFileUpload} disabled={isUploading} />
-          <button className="cta-button" onClick={handleFileUpload} disabled={isUploading || !data.length}>
-            {t("upload", { defaultValue: "Upload" })}
-          </button>
           {isUploading && (
             <div className="progress-bar">
               <div className="progress" style={{ width: `${uploadProgress}%` }}></div>
@@ -245,9 +246,9 @@ function App() {
                   <p>Valid Rows: {data.length}</p>
                   <p>Duplicates: {validation.duplicates.length || "None"}</p>
                   <p>Faults: {validation.faults || "None"}</p>
-                  <p>Price: {validation.price || "$0.00"}</p>
+                  <p>Price: {validation.price}</p>
                   <button className="cta-button" onClick={calculateDistances} disabled={isCalculating}>
-                    {t("calculate", { defaultValue: "Calculate Distances" })}
+                    {t("calculate")}
                   </button>
                 </div>
               )}
@@ -255,47 +256,49 @@ function App() {
           )}
           {results.length > 0 && (
             <button className="cta-button" onClick={downloadResults} style={{ marginTop: "15px" }}>
-              {t("download_results", { defaultValue: "Download Results" })}
+              {t("download_results")}
             </button>
           )}
           <button className="cta-button" onClick={handleDownloadTemplate} style={{ marginTop: "15px" }}>
-            {t("download_template", { defaultValue: "Download Template" })}
+            {t("download_template")}
           </button>
         </div>
       </section>
 
       <section className="pricing">
-        <h2>{t("pricing_title", { defaultValue: "Pricing" })}</h2>
+        <h2>{t("pricing_title")}</h2>
         <table>
           <thead>
             <tr>
-              <th>{t("service", { defaultValue: "Service" })}</th>
-              <th>{t("price", { defaultValue: "Price" })}</th>
+              <th>{t("service")}</th>
+              <th>{t("price")}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>{t("validation_service", { defaultValue: "Validation (duplicates & faults)" })}</td>
-              <td>{t("validation_price", { defaultValue: "Free" })}</td>
+              <td>{t("validation_service")}</td>
+              <td>{t("validation_price")}</td>
             </tr>
             <tr>
-              <td>{t("additional_rows", { defaultValue: "Additional Rows (per row, after 10 free)" })}</td>
-              <td>{t("additional_rows_price", { defaultValue: "$0.10" })}</td>
+              <td>{t("additional_rows")}</td>
+              <td>{t("additional_rows_price")}</td>
             </tr>
             <tr>
-              <td>{t("buy_50_rows", { defaultValue: "Buy 50 Rows" })}</td>
-              <td>{t("buy_50_price", { defaultValue: "$5.00" })}</td>
+              <td>{t("buy_50_rows")}</td>
+              <td>{t("buy_50_price")}</td>
             </tr>
             <tr>
-              <td>{t("buy_100_rows", { defaultValue: "Buy 100 Rows" })}</td>
-              <td>{t("buy_100_price", { defaultValue: "$9.00" })}</td>
+              <td>{t("buy_100_rows")}</td>
+              <td>{t("buy_100_price")}</td>
             </tr>
           </tbody>
         </table>
       </section>
 
       <footer>
-        <p>{t("footer_text", { defaultValue: "Questions? Check" })} <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link", { defaultValue: "documentation" })}</a> {t("footer_contact", { defaultValue: "or contact us." })}</p>
+        <p>
+          {t("footer_text")} <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link")}</a> {t("footer_contact")}
+        </p>
       </footer>
     </div>
   );
