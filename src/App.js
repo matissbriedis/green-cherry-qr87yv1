@@ -1,12 +1,15 @@
-import React, { useState, Suspense } from "react";
-import UploadComponent from "./UploadComponent";
+import React, { useState, Suspense, useEffect } from "react";
 import "./Landing.css";
-import { useTranslation } from "react-i18next"; // Fixed import
+import { useTranslation } from "react-i18next";
 import "./i18n";
 
 function App() {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
+  const [file, setFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [validationResult, setValidationResult] = useState(null);
 
   const handleLanguageChange = (e) => {
     const newLang = e.target.value;
@@ -14,11 +17,42 @@ function App() {
     i18n.changeLanguage(newLang);
   };
 
-  // Placeholder for download template function (replace with actual logic)
   const handleDownloadTemplate = () => {
-    // Add logic to download the template file (e.g., fetch or link to a static file)
     console.log("Download template triggered");
-    // Example: window.location.href = "/template.xlsx";
+    // Placeholder: Replace with actual download logic
+    // window.location.href = "/template.xlsx";
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => (prev >= 100 ? 100 : prev + 10));
+    }, 500);
+
+    try {
+      // Simulate API call for validation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setValidationResult({
+        validRows: 10,
+        totalRows: file.size / 1024, // Rough estimate
+        price: "$0.00",
+        issues: ["No duplicates detected"],
+      });
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setValidationResult({ error: "Upload failed. Please try again." });
+    } finally {
+      clearInterval(interval);
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -63,13 +97,6 @@ function App() {
           }
         >
           {t("start_now", { defaultValue: "Start Now" })}
-        </button>
-        <button
-          className="cta-button"
-          onClick={handleDownloadTemplate}
-          style={{ marginLeft: "10px" }}
-        >
-          {t("download_template", { defaultValue: "Download Template" })}
         </button>
       </header>
 
@@ -133,7 +160,51 @@ function App() {
 
       <section id="upload-section" className="upload-section">
         <h2>{t("upload_title", { defaultValue: "Upload Your File" })}</h2>
-        <UploadComponent />
+        <div className="upload-container">
+          <input
+            type="file"
+            accept=".xlsx,.csv"
+            onChange={handleFileChange}
+            disabled={isUploading}
+          />
+          <button
+            className="cta-button"
+            onClick={handleUpload}
+            disabled={isUploading || !file}
+          >
+            {t("upload", { defaultValue: "Upload" })}
+          </button>
+          {isUploading && (
+            <div className="progress-bar">
+              <div
+                className="progress"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+          )}
+          {validationResult && (
+            <div className="validation-result">
+              <h3>Validation Result</h3>
+              {validationResult.error ? (
+                <p style={{ color: "red" }}>{validationResult.error}</p>
+              ) : (
+                <div>
+                  <p>Valid Rows: {validationResult.validRows}</p>
+                  <p>Total Rows: {validationResult.totalRows.toFixed(2)} KB</p>
+                  <p>Price: {validationResult.price}</p>
+                  <p>Issues: {validationResult.issues.join(", ")}</p>
+                </div>
+              )}
+            </div>
+          )}
+          <button
+            className="cta-button"
+            onClick={handleDownloadTemplate}
+            style={{ marginTop: "15px" }}
+          >
+            {t("download_template", { defaultValue: "Download Template" })}
+          </button>
+        </div>
       </section>
 
       <section className="pricing">
