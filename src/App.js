@@ -4,22 +4,9 @@ import { useTranslation } from "react-i18next";
 import "./i18n";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
+import sanitizeHtml from "sanitize-html";
 
 const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY || "7da23bd96a564a17b6fc360f35c5177e";
-
-// Manual sanitization function
-function manualSanitize(input) {
-  if (typeof input !== "string") return input;
-  let sanitized = input.replace(/<[^>]*>/g, "");
-  sanitized = sanitized
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
-    .replace(/\//g, "&#x2F;");
-  return sanitized;
-}
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -160,7 +147,7 @@ function App() {
 
   const geocode = async (address) => {
     try {
-      const sanitizedAddress = manualSanitize(address);
+      const sanitizedAddress = sanitizeHtml(address, { allowedTags: [], allowedAttributes: {} });
       const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(sanitizedAddress)}&apiKey=${GEOAPIFY_API_KEY}`;
       const response = await fetch(url, { credentials: 'omit' });
       if (response.status === 429) throw new Error("Rate limit exceeded");
