@@ -1,4 +1,4 @@
-import React, { useState, Suspense, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
 import "./i18n";
@@ -11,34 +11,54 @@ function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [validationResult, setValidationResult] = useState(null);
 
+  // Sync language change with i18n and force re-render
+  useEffect(() => {
+    i18n
+      .changeLanguage(language)
+      .then(() => {
+        console.log(`Language changed to ${language}`);
+      })
+      .catch((err) => console.error("Language change failed:", err));
+  }, [language, i18n]);
+
   const handleLanguageChange = (e) => {
-    const newLang = e.target.value;
-    setLanguage(newLang);
-    i18n.changeLanguage(newLang);
+    setLanguage(e.target.value);
   };
 
   const handleDownloadTemplate = () => {
     console.log("Download template triggered");
-    // Placeholder: Replace with actual download logic
-    // window.location.href = "/template.xlsx";
+    const link = document.createElement("a");
+    link.href = "/distance_template.xlsx"; // Path to file in public/
+    link.download = "distance_template.xlsx"; // Suggested filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); // Cleanup
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setValidationResult(null); // Reset on new file
+    }
   };
 
   const handleUpload = async () => {
-    if (!file) return;
+    if (!file) {
+      console.log("No file selected");
+      return;
+    }
     setIsUploading(true);
     setUploadProgress(0);
 
-    // Simulate upload progress
     const interval = setInterval(() => {
       setUploadProgress((prev) => (prev >= 100 ? 100 : prev + 10));
     }, 500);
 
     try {
-      // Simulate API call for validation
+      const formData = new FormData();
+      formData.append("file", file);
+      // Simulate API call (replace with real endpoint)
       await new Promise((resolve) => setTimeout(resolve, 2000));
       setValidationResult({
         validRows: 10,
