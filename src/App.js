@@ -33,9 +33,11 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link); // Cleanup
+    console.log("Download initiated");
   };
 
   const handleFileChange = (e) => {
+    console.log("File selected:", e.target.files[0]);
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
@@ -44,6 +46,7 @@ function App() {
   };
 
   const handleUpload = async () => {
+    console.log("Upload started, file:", file);
     if (!file) {
       console.log("No file selected");
       return;
