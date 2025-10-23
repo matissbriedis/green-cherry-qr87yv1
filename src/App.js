@@ -4,8 +4,10 @@ import { useTranslation } from "react-i18next";
 import "./i18n";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
+import sanitizeHtml from "sanitize-html";
 
-const GEOAPIFY_API_KEY = "7da23bd96a564a17b6fc360f35c5177e";
+const GEOAPIFY_API_KEY =
+  process.env.GEOAPIFY_API_KEY || "7da23bd96a564a17b6fc360f35c5177e";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -47,9 +49,25 @@ function App() {
   };
 
   const handleFileUpload = (e) => {
-    console.log("File selected:", e.target.files[0]);
     const file = e.target.files[0];
     if (!file) return;
+
+    // Define allowed MIME types
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+      "text/csv", // .csv
+    ];
+    const maxSize = 10 * 1024 * 1024; // 10MB limit
+
+    // Check MIME type and size
+    if (!allowedTypes.includes(file.type)) {
+      setError("Invalid file type. Please upload a .xlsx or .csv file.");
+      return;
+    }
+    if (file.size > maxSize) {
+      setError("File size exceeds 10MB. Please upload a smaller file.");
+      return;
+    }
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -124,7 +142,8 @@ function App() {
 
         if (from && to) {
           const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
-          const response = await fetch(url);
+          const response = await fetch(url, { credentials: "omit" });
+          if (response.status === 429) throw new Error("Rate limit exceeded");
           if (!response.ok) throw new Error("Routing API failed");
           const result = await response.json();
           if (result.features && result.features.length > 0) {
@@ -149,10 +168,15 @@ function App() {
 
   const geocode = async (address) => {
     try {
+      const sanitizedAddress = sanitizeHtml(address, {
+        allowedTags: [],
+        allowedAttributes: {},
+      });
       const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-        address
+        sanitizedAddress
       )}&apiKey=${GEOAPIFY_API_KEY}`;
-      const response = await fetch(url);
+      const response = await fetch(url, { credentials: "omit" });
+      if (response.status === 429) throw new Error("Rate limit exceeded");
       if (!response.ok) throw new Error("Geocode API failed");
       const data = await response.json();
       if (data.features && data.features.length > 0) {
