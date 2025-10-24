@@ -1,13 +1,7 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ],
     "redirects": [
       {
-        "source": "/:path*",
+        "source": "/:splat*",
         "has": [
           {
             "type": "header",
@@ -15,18 +9,18 @@
             "value": "http"
           }
         ],
-        "destination": "https://distancesinbulk.com/:path*",
+        "destination": "https://distancesinbulk.com/:splat*",
         "permanent": true
       },
       {
-        "source": "/:path*",
+        "source": "/:splat*",
         "has": [
           {
             "type": "host",
             "value": "www.distancesinbulk.com"
           }
         ],
-        "destination": "https://distancesinbulk.com/:path*",
+        "destination": "https://distancesinbulk.com/:splat*",
         "permanent": true
       }
     ]
