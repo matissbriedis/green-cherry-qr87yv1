@@ -1,4 +1,10 @@
 {
+    "rewrites": [
+      {
+        "source": "/(.*)",
+        "destination": "/index.html"
+      }
+    ],
     "redirects": [
       {
         "source": "/:path*",
@@ -17,7 +23,7 @@
         "has": [
           {
             "type": "host",
-            "value": "www.distancesinbulk.com"
+          "value": "www.distancesinbulk.com"
           }
         ],
         "destination": "https://distancesinbulk.com/:path*",

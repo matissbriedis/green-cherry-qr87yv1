@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
 import "./i18n";
@@ -8,12 +8,12 @@ import * as XLSX from "xlsx";
 const GEOAPIFY_API_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
 
 if (!GEOAPIFY_API_KEY) {
-  console.error("GEOAPIFY_API_KEY is missing. Add it in Vercel > Settings > Environment Variables.");
+  console.error("GEOAPIFY_API_KEY is missing. Add it in Vercel Environment Variables.");
 }
 
 function clean(str) {
   if (!str) return "";
-  return str.replace(/[<>&"']/g, "").trim();
+  return str.replace(/[<>&"'/]/g, "").trim();
 }
 
 function App() {
@@ -28,20 +28,24 @@ function App() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    i18n.changeLanguage(language);
-  }, [language, i18n]);
+    i18n.changeLanguage(language).then(() => {
+      console.log(`Language changed to ${language}, t('title') = ${t("title", { defaultValue: "Fallback Title" })}`);
+    }).catch(err => console.error("Language change failed:", err));
+  }, [language, i18n, t]);
 
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
   };
 
   const handleDownloadTemplate = () => {
+    console.log("Download template triggered");
     const link = document.createElement("a");
     link.href = "/distance_template.xlsx";
     link.download = "distance_template.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    console.log("Download initiated");
   };
 
   const handleFileUpload = (e) => {
