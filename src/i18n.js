@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-// Define resources
+// Translation Resources
 const resources = {
   en: {
     translation: {
@@ -37,8 +37,8 @@ const resources = {
       buy_100_price: "$9.00",
       footer_text: "Questions? Check",
       footer_link: "documentation",
-      footer_contact: "or contact us.",
-    },
+      footer_contact: "or contact us."
+    }
   },
   sv: {
     translation: {
@@ -74,8 +74,8 @@ const resources = {
       buy_100_price: "$9.00",
       footer_text: "Frågor? Kolla",
       footer_link: "dokumentation",
-      footer_contact: "eller kontakta oss.",
-    },
+      footer_contact: "eller kontakta oss."
+    }
   },
   no: {
     translation: {
@@ -111,8 +111,8 @@ const resources = {
       buy_100_price: "$9.00",
       footer_text: "Spørsmål? Sjekk",
       footer_link: "dokumentation",
-      footer_contact: "eller kontakt oss.",
-    },
+      footer_contact: "eller kontakt oss."
+    }
   },
   da: {
     translation: {
@@ -148,29 +148,23 @@ const resources = {
       buy_100_price: "$9.00",
       footer_text: "Spørgsmål? Tjek",
       footer_link: "dokumentation",
-      footer_contact: "eller kontakt os.",
-    },
-  },
+      footer_contact: "eller kontakt os."
+    }
+  }
 };
 
-// Initialize i18n synchronously to ensure resources are loaded before app renders
+// Initialize i18n
 i18n
   .use(initReactI18next)
   .init({
     resources,
     lng: "en",
     fallbackLng: "en",
-    interpolation: { escapeValue: false },
-    debug: true,
-  })
-  .then(() => {
-    console.log("i18n initialized with languages:", Object.keys(resources));
-    if (!i18n.hasResourceBundle("en", "translation")) {
-      console.error("Translation resources not loaded for 'en'");
-    } else {
-      console.log("Translation resources loaded successfully for 'en':", i18n.getResourceBundle("en", "translation"));
-    }
-  })
-  .catch(err => console.error("i18n initialization error:", err));
+    interpolation: {
+      escapeValue: false
+    },
+    // Remove debug in production
+    debug: process.env.NODE_ENV === "development"
+  });
 
 export default i18n;
