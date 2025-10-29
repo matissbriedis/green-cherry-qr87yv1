@@ -1,7 +1,7 @@
+// src/i18n.js
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
-// Translation Resources
 const resources = {
   en: {
     translation: {
@@ -153,18 +153,14 @@ const resources = {
   }
 };
 
-// Initialize i18n
 i18n
   .use(initReactI18next)
   .init({
     resources,
     lng: "en",
     fallbackLng: "en",
-    interpolation: {
-      escapeValue: false
-    },
-    // Remove debug in production
-    debug: process.env.NODE_ENV === "development"
+    interpolation: { escapeValue: false },
+    debug: false
   });
 
 export default i18n;
