@@ -2,15 +2,68 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Bulk distance calculation for spreadsheets"
-    />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <title>Distance in Bulk</title>
+    <meta name="description" content="Calculate distances in bulk" />
+    <title>Distances in Bulk</title>
+
+    <!-- ==== PAYPAL SDK ==== -->
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&components=hosted-buttons&disable-funding=venmo&currency=EUR"
+      crossorigin="anonymous"
+      async
+    ></script>
+
+    <!-- ==== GLOBAL RENDER FUNCTION (runs when SDK is ready) ==== -->
+    <script>
+      /**
+       * Renders PayPal Hosted Buttons into every container that exists.
+       * Retries until the PayPal SDK is fully loaded.
+       */
+      function renderPayPalButtons() {
+        if (
+          window.paypal &&
+          typeof window.paypal.HostedButtons === "function"
+        ) {
+          // Upload-section button
+          const uploadContainer = document.getElementById(
+            "paypal-container-SZHCMQ36L2RAU"
+          );
+          if (uploadContainer) {
+            window.paypal
+              .HostedButtons({
+                hostedButtonId: "SZHCMQ36L2RAU",
+              })
+              .render("#paypal-container-SZHCMQ36L2RAU")
+              .catch((e) => console.error("PayPal render error:", e));
+          }
+
+          // Pricing-table button
+          const pricingContainer = document.getElementById(
+            "paypal-container-SZHCMQ36L2RAU-pricing"
+          );
+          if (pricingContainer) {
+            window.paypal
+              .HostedButtons({
+                hostedButtonId: "SZHCMQ36L2RAU",
+              })
+              .render("#paypal-container-SZHCMQ36L2RAU-pricing")
+              .catch((e) => console.error("PayPal render error:", e));
+          }
+        } else {
+          // SDK not ready yet – try again in 100 ms
+          setTimeout(renderPayPalButtons, 100);
+        }
+      }
+
+      // Start trying as soon as the page loads
+      window.addEventListener("load", () => {
+        setTimeout(renderPayPalButtons, 300);
+      });
+    </script>
   </head>
+
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>

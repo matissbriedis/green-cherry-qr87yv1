@@ -1,3 +1,4 @@
+/* src/App.js – pure JavaScript (no TypeScript) */
 import React, { useState, useEffect } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
@@ -8,21 +9,18 @@ import * as XLSX from "xlsx";
 const GEOAPIFY_API_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
 
 if (!GEOAPIFY_API_KEY) {
-  console.error(
-    "GEOAPIFY_API_KEY is missing. Add it in Vercel Environment Variables."
-  );
+  console.error("GEOAPIFY_API_KEY is missing – add it in Vercel env vars.");
 }
 
 function clean(str) {
-  if (!str) return "";
-  return str.replace(/[<>&"'/]/g, "").trim();
+  return (str || "").replace(/[<>&"'/]/g, "").trim();
 }
 
 function App() {
   const { t, i18n } = useTranslation();
   const [language, setLanguage] = useState(i18n.language || "en");
-  const [data, setData] = useState([]);
-  const [results, setResults] = useState([]);
+  const [data, setData] = useState([]);               // rows
+  const [results, setResults] = useState([]);         // calculated rows
   const [validation, setValidation] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -30,17 +28,19 @@ function App() {
   const [error, setError] = useState("");
   const [paidRows, setPaidRows] = useState(0);
 
-  // Load paid rows from URL or localStorage
+  /* -------------------------------------------------------------
+   *  Load paid rows from URL (?paid=50) or localStorage
+   * ------------------------------------------------------------ */
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paid = urlParams.get("paid");
+    const params = new URLSearchParams(window.location.search);
+    const paid = params.get("paid");
     if (paid === "50") {
       setPaidRows(50);
       localStorage.setItem("paidRows", "50");
       window.history.replaceState({}, document.title, "/");
     } else {
       const saved = localStorage.getItem("paidRows");
-      if (saved) setPaidRows(parseInt(saved));
+      if (saved) setPaidRows(parseInt(saved, 10));
     }
   }, []);
 
@@ -48,21 +48,22 @@ function App() {
     i18n.changeLanguage(language);
   }, [language, i18n]);
 
-  const handleLanguageChange = (e) => {
-    setLanguage(e.target.value);
-  };
+  const handleLanguageChange = (e) => setLanguage(e.target.value);
 
   const handleDownloadTemplate = () => {
-    const link = document.createElement("a");
-    link.href = "/distance_template.xlsx";
-    link.download = "distance_template.xlsx";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement("a");
+    a.href = "/distance_template.xlsx";
+    a.download = "distance_template.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
+  /* -------------------------------------------------------------
+   *  File upload & parsing
+   * ------------------------------------------------------------ */
   const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const allowed = [
@@ -74,7 +75,7 @@ function App() {
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError("File too big. Max 10 MB.");
+      setError("File too big – max 10 MB.");
       return;
     }
 
@@ -82,58 +83,57 @@ function App() {
     setUploadProgress(0);
     setError("");
 
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => (prev >= 100 ? 100 : prev + 10));
+    const progressInterval = setInterval(() => {
+      setUploadProgress((p) => (p >= 100 ? 100 : p + 10));
     }, 500);
 
     const reader = new FileReader();
-    reader.onload = (evt) => {
-      const bstr = evt.target.result;
+    reader.onload = (ev) => {
+      const bstr = ev.target?.result;
       let jsonData = [];
 
       if (file.type.includes("csv")) {
         const txt = new TextDecoder().decode(new Uint8Array(bstr));
         jsonData = Papa.parse(txt, { header: true, skipEmptyLines: true }).data;
       } else {
-        const workbook = XLSX.read(bstr, { type: "binary" });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        jsonData = XLSX.utils.sheet_to_json(sheet);
+        const wb = XLSX.read(bstr, { type: "binary" });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        jsonData = XLSX.utils.sheet_to_json(ws);
       }
 
-      const safeData = jsonData.map((row) => ({
-        From: clean(row.From),
-        To: clean(row.To),
+      const safe = jsonData.map((r) => ({
+        From: clean(r.From),
+        To: clean(r.To),
       }));
-
-      setData(safeData);
-      validateData(safeData);
-      clearInterval(interval);
+      setData(safe);
+      validateData(safe);
+      clearInterval(progressInterval);
       setIsUploading(false);
     };
 
-    if (file.type.includes("csv")) {
-      reader.readAsArrayBuffer(file);
-    } else {
-      reader.readAsBinaryString(file);
-    }
+    if (file.type.includes("csv")) reader.readAsArrayBuffer(file);
+    else reader.readAsBinaryString(file);
   };
 
-  const validateData = (data) => {
-    const duplicates = data
+  const validateData = (rows) => {
+    const dupes = rows
       .filter(
-        (row, index) =>
-          data.findIndex(
-            (r, i) => i !== index && r.From === row.From && r.To === row.To
+        (r, i) =>
+          rows.findIndex(
+            (x, j) => j !== i && x.From === r.From && x.To === r.To
           ) !== -1
       )
       .map((d) => `${d.From} - ${d.To}`);
-    const price = Math.max(0, (data.length - 10) * 0.1).toFixed(2);
-    setValidation({ duplicates: [...new Set(duplicates)], price: `€${price}` });
+    const price = Math.max(0, (rows.length - 10) * 0.1).toFixed(2);
+    setValidation({ duplicates: [...new Set(dupes)], price: `€${price}` });
   };
 
+  /* -------------------------------------------------------------
+   *  Distance calculation
+   * ------------------------------------------------------------ */
   const calculateDistances = async () => {
     if (!GEOAPIFY_API_KEY) {
-      setError("API key missing. Contact admin.");
+      setError("API key missing – contact admin.");
       return;
     }
     if (!validation || data.length === 0) {
@@ -141,90 +141,79 @@ function App() {
       return;
     }
 
-    const freeRows = 10;
-    const totalAllowed = freeRows + paidRows;
-
+    const totalAllowed = 10 + paidRows;
     if (data.length > totalAllowed) {
       setError(
-        `You need to purchase additional rows. You have ${paidRows} paid rows. Max allowed: ${totalAllowed}.`
+        `You need more rows. You have ${paidRows} paid rows (max ${totalAllowed}).`
       );
       return;
     }
 
     setIsCalculating(true);
     setError("");
-    const calculated = [];
+    const out = [];
 
     for (const row of data) {
       try {
         const from = await geocode(row.From);
         const to = await geocode(row.To);
-
         if (from && to) {
           const url = `https://api.geoapify.com/v1/routing?waypoints=${from.lat},${from.lon}|${to.lat},${to.lon}&mode=drive&apiKey=${GEOAPIFY_API_KEY}`;
-          const response = await fetch(url, { credentials: "omit" });
-          if (response.status === 429) throw new Error("Rate limit");
-          if (!response.ok) throw new Error("Routing failed");
-          const result = await response.json();
-          const km = result.features?.[0]?.properties?.distance
-            ? (result.features[0].properties.distance / 1000).toFixed(2)
-            : "No route";
-          calculated.push({ ...row, Distance: `${km} km` });
+          const resp = await fetch(url, { credentials: "omit" });
+          if (!resp.ok) throw new Error("routing");
+          const json = await resp.json();
+          const km =
+            json.features?.[0]?.properties?.distance != null
+              ? (json.features[0].properties.distance / 1000).toFixed(2)
+              : "No route";
+          out.push({ ...row, Distance: `${km} km` });
         } else {
-          calculated.push({ ...row, Distance: "Geocode failed" });
+          out.push({ ...row, Distance: "Geocode failed" });
         }
-      } catch (err) {
-        calculated.push({ ...row, Distance: "Error" });
+      } catch {
+        out.push({ ...row, Distance: "Error" });
       }
     }
-    setResults(calculated);
+    setResults(out);
     setIsCalculating(false);
   };
 
-  const geocode = async (address) => {
+  const geocode = async (addr) => {
     if (!GEOAPIFY_API_KEY) return null;
     try {
       const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-        address
+        addr
       )}&apiKey=${GEOAPIFY_API_KEY}`;
-      const response = await fetch(url, { credentials: "omit" });
-      if (response.status === 429) throw new Error("Rate limit");
-      if (!response.ok) throw new Error("Geocode failed");
-      const data = await response.json();
-      if (data.features?.[0]?.geometry?.coordinates) {
-        const [lon, lat] = data.features[0].geometry.coordinates;
+      const r = await fetch(url, { credentials: "omit" });
+      if (!r.ok) return null;
+      const j = await r.json();
+      const coords = j.features?.[0]?.geometry?.coordinates;
+      if (coords) {
+        const [lon, lat] = coords;
         return { lat, lon };
       }
       return null;
-    } catch (err) {
+    } catch {
       return null;
     }
   };
 
   const downloadResults = () => {
     if (!results.length) return;
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(results);
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
-    XLSX.writeFile(workbook, "calculated_distances.xlsx");
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(results);
+    XLSX.utils.book_append_sheet(wb, ws, "Results");
+    XLSX.writeFile(wb, "calculated_distances.xlsx");
   };
 
+  /* -------------------------------------------------------------
+   *  Render
+   * ------------------------------------------------------------ */
   return (
     <div className="app">
-      {/* PayPal SDK */}
-      <script
-        src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&components=hosted-buttons&disable-funding=venmo&currency=EUR"
-        crossOrigin="anonymous"
-        async
-      ></script>
-
-      <div
-        className="language-section"
-        style={{ padding: "20px", textAlign: "center" }}
-      >
-        <label htmlFor="language-select" className="language-label">
-          {t("toggle_language")}:
-        </label>
+      {/* Language selector */}
+      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
+        <label htmlFor="language-select">{t("toggle_language")}:</label>
         <select
           id="language-select"
           value={language}
@@ -243,9 +232,7 @@ function App() {
         <p>{t("description")}</p>
         <button
           className="cta-button"
-          onClick={() =>
-            document.getElementById("upload-section").scrollIntoView()
-          }
+          onClick={() => document.getElementById("upload-section")?.scrollIntoView()}
         >
           {t("start_now")}
         </button>
@@ -271,6 +258,7 @@ function App() {
         </ol>
       </section>
 
+      {/* ==== UPLOAD SECTION ==== */}
       <section id="upload-section" className="upload-section">
         <h2>{t("upload_title")}</h2>
         <div className="upload-container">
@@ -282,10 +270,7 @@ function App() {
           />
           {isUploading && (
             <div className="progress-bar">
-              <div
-                className="progress"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+              <div className="progress" style={{ width: `${uploadProgress}%` }}></div>
             </div>
           )}
 
@@ -301,23 +286,16 @@ function App() {
                   <p>Price: {validation.price}</p>
 
                   {data.length > 10 + paidRows ? (
-                    <div
-                      className="payment-required"
-                      style={{ marginTop: "20px", textAlign: "center" }}
-                    >
+                    <div style={{ margin: "20px 0", textAlign: "center" }}>
                       <p style={{ color: "red", fontWeight: "bold" }}>
-                        Please purchase additional rows to continue.
+                        Please purchase additional rows.
                       </p>
                       <p>
-                        You have {paidRows} paid rows. Need {data.length - 10}{" "}
-                        total.
+                        You have {paidRows} paid rows – need {data.length - 10}.
                       </p>
 
-                      {/* PayPal Button Container */}
-                      <div
-                        id="paypal-container-SZHCMQ36L2RAU"
-                        style={{ margin: "20px 0" }}
-                      ></div>
+                      {/* PayPal button container */}
+                      <div id="paypal-container-SZHCMQ36L2RAU"></div>
                     </div>
                   ) : (
                     <button
@@ -334,11 +312,7 @@ function App() {
           )}
 
           {results.length > 0 && (
-            <button
-              className="cta-button"
-              onClick={downloadResults}
-              style={{ marginTop: "15px" }}
-            >
+            <button className="cta-button" onClick={downloadResults} style={{ marginTop: "15px" }}>
               {t("download_results")}
             </button>
           )}
@@ -352,6 +326,7 @@ function App() {
         </div>
       </section>
 
+      {/* ==== PRICING TABLE ==== */}
       <section className="pricing">
         <h2>{t("pricing_title")}</h2>
         <table>
@@ -373,7 +348,10 @@ function App() {
             <tr>
               <td>
                 {t("buy_50_rows")}
-                <div id="paypal-container-SZHCMQ36L2RAU-pricing"></div>
+                <div
+                  id="paypal-container-SZHCMQ36L2RAU-pricing"
+                  style={{ marginTop: "8px" }}
+                ></div>
               </td>
               <td>€5.00</td>
             </tr>
@@ -384,35 +362,10 @@ function App() {
       <footer>
         <p>
           {t("footer_text")}{" "}
-          <a href="https://docs.distance.tools/tools/spreadsheet">
-            {t("footer_link")}
-          </a>{" "}
+          <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link")}</a>{" "}
           {t("footer_contact")}
         </p>
       </footer>
-
-      {/* Render PayPal Buttons */}
-      <script>
-        {(() => {
-          document.addEventListener("DOMContentLoaded", () => {
-            if (window.paypal) {
-              // Upload section button
-              window.paypal
-                .HostedButtons({
-                  hostedButtonId: "SZHCMQ36L2RAU",
-                })
-                .render("#paypal-container-SZHCMQ36L2RAU");
-
-              // Pricing table button
-              window.paypal
-                .HostedButtons({
-                  hostedButtonId: "SZHCMQ36L2RAU",
-                })
-                .render("#paypal-container-SZHCMQ36L2RAU-pricing");
-            }
-          });
-        })()}
-      </script>
     </div>
   );
 }
