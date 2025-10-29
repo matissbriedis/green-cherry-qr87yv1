@@ -5,8 +5,11 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Calculate distances in bulk" />
-    <title>Distances in Bulk</title>
+    <meta
+      name="description"
+      content="Calculate distances in bulk from Excel/CSV files – free tool"
+    />
+    <title>Distances in Bulk – Free Distance Calculator</title>
 
     <!-- Google Search Console Verification -->
     <meta
@@ -14,38 +17,40 @@
       content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk"
     />
 
-    <!-- PayPal SDK (already added) -->
+    <!-- Google AdSense – AUTO ADS (LIVE) -->
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1735278035868561"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- PayPal SDK -->
     <script
       src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&components=hosted-buttons&disable-funding=venmo&currency=EUR"
       crossorigin="anonymous"
       async
     ></script>
 
-    <!-- PayPal Render Script (already added) -->
+    <!-- PayPal Button Renderer -->
     <script>
       function renderPayPalButtons() {
         if (
           window.paypal &&
           typeof window.paypal.HostedButtons === "function"
         ) {
-          const uploadContainer = document.getElementById(
-            "paypal-container-SZHCMQ36L2RAU"
-          );
-          if (uploadContainer) {
-            window.paypal
-              .HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
-              .render("#paypal-container-SZHCMQ36L2RAU")
-              .catch((e) => console.error(e));
-          }
-          const pricingContainer = document.getElementById(
-            "paypal-container-SZHCMQ36L2RAU-pricing"
-          );
-          if (pricingContainer) {
-            window.paypal
-              .HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
-              .render("#paypal-container-SZHCMQ36L2RAU-pricing")
-              .catch((e) => console.error(e));
-          }
+          const containers = [
+            "paypal-container-SZHCMQ36L2RAU",
+            "paypal-container-SZHCMQ36L2RAU-pricing",
+          ];
+          containers.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) {
+              window.paypal
+                .HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
+                .render(`#${id}`)
+                .catch(console.error);
+            }
+          });
         } else {
           setTimeout(renderPayPalButtons, 100);
         }
