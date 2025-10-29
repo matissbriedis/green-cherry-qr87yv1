@@ -8,62 +8,53 @@
     <meta name="description" content="Calculate distances in bulk" />
     <title>Distances in Bulk</title>
 
-    <!-- ==== PAYPAL SDK ==== -->
+    <!-- Google Search Console Verification -->
+    <meta
+      name="google-site-verification"
+      content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk"
+    />
+
+    <!-- PayPal SDK (already added) -->
     <script
       src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&components=hosted-buttons&disable-funding=venmo&currency=EUR"
       crossorigin="anonymous"
       async
     ></script>
 
-    <!-- ==== GLOBAL RENDER FUNCTION (runs when SDK is ready) ==== -->
+    <!-- PayPal Render Script (already added) -->
     <script>
-      /**
-       * Renders PayPal Hosted Buttons into every container that exists.
-       * Retries until the PayPal SDK is fully loaded.
-       */
       function renderPayPalButtons() {
         if (
           window.paypal &&
           typeof window.paypal.HostedButtons === "function"
         ) {
-          // Upload-section button
           const uploadContainer = document.getElementById(
             "paypal-container-SZHCMQ36L2RAU"
           );
           if (uploadContainer) {
             window.paypal
-              .HostedButtons({
-                hostedButtonId: "SZHCMQ36L2RAU",
-              })
+              .HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
               .render("#paypal-container-SZHCMQ36L2RAU")
-              .catch((e) => console.error("PayPal render error:", e));
+              .catch((e) => console.error(e));
           }
-
-          // Pricing-table button
           const pricingContainer = document.getElementById(
             "paypal-container-SZHCMQ36L2RAU-pricing"
           );
           if (pricingContainer) {
             window.paypal
-              .HostedButtons({
-                hostedButtonId: "SZHCMQ36L2RAU",
-              })
+              .HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
               .render("#paypal-container-SZHCMQ36L2RAU-pricing")
-              .catch((e) => console.error("PayPal render error:", e));
+              .catch((e) => console.error(e));
           }
         } else {
-          // SDK not ready yet – try again in 100 ms
           setTimeout(renderPayPalButtons, 100);
         }
       }
-
-      // Start trying as soon as the page loads
-      window.addEventListener("load", () => {
-        setTimeout(renderPayPalButtons, 300);
-      });
+      window.addEventListener("load", () =>
+        setTimeout(renderPayPalButtons, 300)
+      );
     </script>
   </head>
-
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
