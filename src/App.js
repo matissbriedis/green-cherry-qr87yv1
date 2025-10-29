@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
 import "./i18n";
@@ -8,7 +8,9 @@ import * as XLSX from "xlsx";
 const GEOAPIFY_API_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
 
 if (!GEOAPIFY_API_KEY) {
-  console.error("GEOAPIFY_API_KEY is missing. Add it in Vercel Environment Variables.");
+  console.error(
+    "GEOAPIFY_API_KEY is missing. Add it in Vercel Environment Variables."
+  );
 }
 
 function clean(str) {
@@ -26,26 +28,37 @@ function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState("");
+  const [paidRows, setPaidRows] = useState(0);
+
+  // Load paid rows from URL or localStorage
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paid = urlParams.get("paid");
+    if (paid === "50") {
+      setPaidRows(50);
+      localStorage.setItem("paidRows", "50");
+      window.history.replaceState({}, document.title, "/");
+    } else {
+      const saved = localStorage.getItem("paidRows");
+      if (saved) setPaidRows(parseInt(saved));
+    }
+  }, []);
 
   useEffect(() => {
-    i18n.changeLanguage(language).then(() => {
-      console.log(`Language changed to ${language}, t('title') = ${t("title", { defaultValue: "Fallback Title" })}`);
-    }).catch(err => console.error("Language change failed:", err));
-  }, [language, i18n, t]);
+    i18n.changeLanguage(language);
+  }, [language, i18n]);
 
   const handleLanguageChange = (e) => {
     setLanguage(e.target.value);
   };
 
   const handleDownloadTemplate = () => {
-    console.log("Download template triggered");
     const link = document.createElement("a");
     link.href = "/distance_template.xlsx";
     link.download = "distance_template.xlsx";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    console.log("Download initiated");
   };
 
   const handleFileUpload = (e) => {
@@ -54,7 +67,7 @@ function App() {
 
     const allowed = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "text/csv"
+      "text/csv",
     ];
     if (!allowed.includes(file.type)) {
       setError("Only .xlsx or .csv files allowed.");
@@ -87,9 +100,9 @@ function App() {
         jsonData = XLSX.utils.sheet_to_json(sheet);
       }
 
-      const safeData = jsonData.map(row => ({
+      const safeData = jsonData.map((row) => ({
         From: clean(row.From),
-        To: clean(row.To)
+        To: clean(row.To),
       }));
 
       setData(safeData);
@@ -107,11 +120,15 @@ function App() {
 
   const validateData = (data) => {
     const duplicates = data
-      .filter((row, index) => data.findIndex((r, i) => i !== index && r.From === row.From && r.To === row.To) !== -1)
-      .map(d => `${d.From} - ${d.To}`);
-    const faults = data.filter(row => !row.From || !row.To).length;
-    const price = Math.max(0, (data.length - 10) * 0.10).toFixed(2);
-    setValidation({ duplicates: [...new Set(duplicates)], faults, price: `$${price}` });
+      .filter(
+        (row, index) =>
+          data.findIndex(
+            (r, i) => i !== index && r.From === row.From && r.To === row.To
+          ) !== -1
+      )
+      .map((d) => `${d.From} - ${d.To}`);
+    const price = Math.max(0, (data.length - 10) * 0.1).toFixed(2);
+    setValidation({ duplicates: [...new Set(duplicates)], price: `€${price}` });
   };
 
   const calculateDistances = async () => {
@@ -123,8 +140,14 @@ function App() {
       setError("No data to calculate.");
       return;
     }
-    if (data.length > 10 && parseFloat(validation.price.replace("$", "")) > 0) {
-      setError("Please purchase additional rows.");
+
+    const freeRows = 10;
+    const totalAllowed = freeRows + paidRows;
+
+    if (data.length > totalAllowed) {
+      setError(
+        `You need to purchase additional rows. You have ${paidRows} paid rows. Max allowed: ${totalAllowed}.`
+      );
       return;
     }
 
@@ -161,7 +184,9 @@ function App() {
   const geocode = async (address) => {
     if (!GEOAPIFY_API_KEY) return null;
     try {
-      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=${GEOAPIFY_API_KEY}`;
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+        address
+      )}&apiKey=${GEOAPIFY_API_KEY}`;
       const response = await fetch(url, { credentials: "omit" });
       if (response.status === 429) throw new Error("Rate limit");
       if (!response.ok) throw new Error("Geocode failed");
@@ -186,7 +211,17 @@ function App() {
 
   return (
     <div className="app">
-      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
+      {/* PayPal SDK */}
+      <script
+        src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&components=hosted-buttons&disable-funding=venmo&currency=EUR"
+        crossOrigin="anonymous"
+        async
+      ></script>
+
+      <div
+        className="language-section"
+        style={{ padding: "20px", textAlign: "center" }}
+      >
         <label htmlFor="language-select" className="language-label">
           {t("toggle_language")}:
         </label>
@@ -206,7 +241,12 @@ function App() {
       <header className="hero">
         <h1>{t("title")}</h1>
         <p>{t("description")}</p>
-        <button className="cta-button" onClick={() => document.getElementById("upload-section").scrollIntoView()}>
+        <button
+          className="cta-button"
+          onClick={() =>
+            document.getElementById("upload-section").scrollIntoView()
+          }
+        >
           {t("start_now")}
         </button>
       </header>
@@ -234,12 +274,21 @@ function App() {
       <section id="upload-section" className="upload-section">
         <h2>{t("upload_title")}</h2>
         <div className="upload-container">
-          <input type="file" accept=".xlsx,.csv" onChange={handleFileUpload} disabled={isUploading} />
+          <input
+            type="file"
+            accept=".xlsx,.csv"
+            onChange={handleFileUpload}
+            disabled={isUploading}
+          />
           {isUploading && (
             <div className="progress-bar">
-              <div className="progress" style={{ width: `${uploadProgress}%` }}></div>
+              <div
+                className="progress"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
             </div>
           )}
+
           {validation && (
             <div className="validation-result">
               <h3>Validation Result</h3>
@@ -249,21 +298,55 @@ function App() {
                 <div>
                   <p>Valid Rows: {data.length}</p>
                   <p>Duplicates: {validation.duplicates.length || "None"}</p>
-                  <p>Faults: {validation.faults || "None"}</p>
                   <p>Price: {validation.price}</p>
-                  <button className="cta-button" onClick={calculateDistances} disabled={isCalculating}>
-                    {t("calculate")}
-                  </button>
+
+                  {data.length > 10 + paidRows ? (
+                    <div
+                      className="payment-required"
+                      style={{ marginTop: "20px", textAlign: "center" }}
+                    >
+                      <p style={{ color: "red", fontWeight: "bold" }}>
+                        Please purchase additional rows to continue.
+                      </p>
+                      <p>
+                        You have {paidRows} paid rows. Need {data.length - 10}{" "}
+                        total.
+                      </p>
+
+                      {/* PayPal Button Container */}
+                      <div
+                        id="paypal-container-SZHCMQ36L2RAU"
+                        style={{ margin: "20px 0" }}
+                      ></div>
+                    </div>
+                  ) : (
+                    <button
+                      className="cta-button"
+                      onClick={calculateDistances}
+                      disabled={isCalculating}
+                    >
+                      {t("calculate")}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
           )}
+
           {results.length > 0 && (
-            <button className="cta-button" onClick={downloadResults} style={{ marginTop: "15px" }}>
+            <button
+              className="cta-button"
+              onClick={downloadResults}
+              style={{ marginTop: "15px" }}
+            >
               {t("download_results")}
             </button>
           )}
-          <button className="cta-button" onClick={handleDownloadTemplate} style={{ marginTop: "15px" }}>
+          <button
+            className="cta-button"
+            onClick={handleDownloadTemplate}
+            style={{ marginTop: "15px" }}
+          >
             {t("download_template")}
           </button>
         </div>
@@ -288,12 +371,11 @@ function App() {
               <td>{t("additional_rows_price")}</td>
             </tr>
             <tr>
-              <td>{t("buy_50_rows")}</td>
-              <td>{t("buy_50_price")}</td>
-            </tr>
-            <tr>
-              <td>{t("buy_100_rows")}</td>
-              <td>{t("buy_100_price")}</td>
+              <td>
+                {t("buy_50_rows")}
+                <div id="paypal-container-SZHCMQ36L2RAU-pricing"></div>
+              </td>
+              <td>€5.00</td>
             </tr>
           </tbody>
         </table>
@@ -301,9 +383,36 @@ function App() {
 
       <footer>
         <p>
-          {t("footer_text")} <a href="https://docs.distance.tools/tools/spreadsheet">{t("footer_link")}</a> {t("footer_contact")}
+          {t("footer_text")}{" "}
+          <a href="https://docs.distance.tools/tools/spreadsheet">
+            {t("footer_link")}
+          </a>{" "}
+          {t("footer_contact")}
         </p>
       </footer>
+
+      {/* Render PayPal Buttons */}
+      <script>
+        {(() => {
+          document.addEventListener("DOMContentLoaded", () => {
+            if (window.paypal) {
+              // Upload section button
+              window.paypal
+                .HostedButtons({
+                  hostedButtonId: "SZHCMQ36L2RAU",
+                })
+                .render("#paypal-container-SZHCMQ36L2RAU");
+
+              // Pricing table button
+              window.paypal
+                .HostedButtons({
+                  hostedButtonId: "SZHCMQ36L2RAU",
+                })
+                .render("#paypal-container-SZHCMQ36L2RAU-pricing");
+            }
+          });
+        })()}
+      </script>
     </div>
   );
 }
