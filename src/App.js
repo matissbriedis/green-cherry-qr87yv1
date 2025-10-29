@@ -1,8 +1,5 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
 import "./Landing.css";
-import { useTranslation } from "react-i18next";
-import "./i18n";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
@@ -13,8 +10,6 @@ function clean(str) {
 }
 
 function App() {
-  const { t, i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language || "en");
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
   const [validation, setValidation] = useState(null);
@@ -24,12 +19,6 @@ function App() {
   const [error, setError] = useState("");
   const [paidRows, setPaidRows] = useState(0);
 
-  // Sync language with i18n
-  useEffect(() => {
-    i18n.changeLanguage(language);
-  }, [language, i18n]);
-
-  // Load paid rows
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paid = params.get("paid");
@@ -42,12 +31,6 @@ function App() {
       if (saved) setPaidRows(parseInt(saved, 10));
     }
   }, []);
-
-  const handleLanguageChange = (e) => {
-    const newLang = e.target.value;
-    setLanguage(newLang);
-    i18n.changeLanguage(newLang); // Force update
-  };
 
   const handleDownloadTemplate = () => {
     const a = document.createElement("a");
@@ -111,7 +94,12 @@ function App() {
 
   const validateData = (rows) => {
     const dupes = rows
-      .filter((r, i) => rows.findIndex((x, j) => j !== i && x.From === r.From && x.To === r.To) !== -1)
+      .filter(
+        (r, i) =>
+          rows.findIndex(
+            (x, j) => j !== i && x.From === r.From && x.To === r.To
+          ) !== -1
+      )
       .map((d) => `${d.From} - ${d.To}`);
     const price = Math.max(0, (rows.length - 10) * 0.1).toFixed(2);
     setValidation({ duplicates: [...new Set(dupes)], price: `$${price}` });
@@ -158,7 +146,9 @@ function App() {
   const geocode = async (addr) => {
     if (!GEOAPIFY_API_KEY) return null;
     try {
-      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(addr)}&apiKey=${GEOAPIFY_API_KEY}`;
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+        addr
+      )}&apiKey=${GEOAPIFY_API_KEY}`;
       const r = await fetch(url);
       if (!r.ok) return null;
       const j = await r.json();
@@ -180,129 +170,111 @@ function App() {
 
   return (
     <div className="app">
-      {/* Language Toggle */}
-      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
-        <label htmlFor="lang-select">{t("toggle_language")}:</label>
-        <select
-          id="lang-select"
-          value={language}
-          onChange={handleLanguageChange}
-          style={{ marginLeft: "8px", padding: "4px" }}
-        >
-          <option value="en">English</option>
-          <option value="sv">Svenska</option>
-          <option value="no">Norsk</option>
-          <option value="da">Dansk</option>
-        </select>
-      </div>
-
-      {/* Hero */}
       <header className="hero">
-        <h1>{t("title")}</h1>
-        <p>{t("description")}</p>
+        <h1>Bulk Distance Calculator – Free Excel & CSV Tool</h1>
+        <p>Calculate thousands of distances in seconds. Free for 10 rows.</p>
         <button
           className="cta-button"
-          onClick={() => document.getElementById("upload-section")?.scrollIntoView()}
+          onClick={() =>
+            document.getElementById("upload-section")?.scrollIntoView()
+          }
         >
-          {t("start_now")}
+          Start Now
         </button>
       </header>
 
-      {/* Features */}
-      <section className="features">
-        <h2>{t("features_title")}</h2>
-        <ul>
-          <li>{t("feature_supports")}</li>
-          <li>{t("feature_output")}</li>
-          <li>{t("feature_validation")}</li>
-          <li>{t("feature_no_signup")}</li>
-        </ul>
-      </section>
-
-      {/* How It Works */}
-      <section className="how-it-works">
-        <h2>{t("how_it_works_title")}</h2>
-        <ol>
-          <li>{t("step1")}</li>
-          <li>{t("step2")}</li>
-          <li>{t("step3")}</li>
-          <li>{t("step4")}</li>
-        </ol>
-      </section>
-
-      {/* Upload */}
       <section id="upload-section" className="upload-section">
-        <h2>{t("upload_title")}</h2>
-        <div className="upload-container">
-          <input type="file" accept=".xlsx,.csv" onChange={handleFileUpload} disabled={isUploading} />
-          {isUploading && (
-            <div className="progress-bar">
-              <div className="progress" style={{ width: `${uploadProgress}%` }}></div>
-            </div>
-          )}
+        <h2>Upload Your File</h2>
+        <input
+          type="file"
+          accept=".xlsx,.csv"
+          onChange={handleFileUpload}
+          disabled={isUploading}
+        />
+        {isUploading && (
+          <div className="progress-bar">
+            <div
+              className="progress"
+              style={{ width: `${uploadProgress}%` }}
+            ></div>
+          </div>
+        )}
 
-          {validation && (
-            <div className="validation-result">
-              <h3>Validation Result</h3>
-              {error ? (
-                <p style={{ color: "red" }}>{error}</p>
-              ) : (
-                <div>
-                  <p>Valid Rows: {data.length}</p>
-                  <p>Duplicates: {validation.duplicates.length || "None"}</p>
-                  <p>Price: {validation.price}</p>
+        {validation && (
+          <div className="validation-result">
+            <h3>Validation Result</h3>
+            {error ? (
+              <p style={{ color: "red" }}>{error}</p>
+            ) : (
+              <div>
+                <p>Rows: {data.length}</p>
+                <p>Duplicates: {validation.duplicates.length || "None"}</p>
+                <p>Price: {validation.price}</p>
 
-                  {data.length > 10 + paidRows ? (
-                    <div style={{ margin: "20px 0", textAlign: "center" }}>
-                      <p style={{ color: "red", fontWeight: "bold" }}>Purchase additional rows</p>
-                      <div id="paypal-container-SZHCMQ36L2RAU"></div>
-                    </div>
-                  ) : (
-                    <button className="cta-button" onClick={calculateDistances} disabled={isCalculating}>
-                      {t("calculate")}
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+                {data.length > 10 + paidRows ? (
+                  <div style={{ margin: "20px 0", textAlign: "center" }}>
+                    <p style={{ color: "red", fontWeight: "bold" }}>
+                      Buy more rows
+                    </p>
+                    <div id="paypal-container-SZHCMQ36L2RAU"></div>
+                  </div>
+                ) : (
+                  <button
+                    className="cta-button"
+                    onClick={calculateDistances}
+                    disabled={isCalculating}
+                  >
+                    Calculate
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
-          {results.length > 0 && (
-            <button className="cta-button" onClick={downloadResults} style={{ marginTop: "15px" }}>
-              {t("download_results")}
-            </button>
-          )}
-          <button className="cta-button" onClick={handleDownloadTemplate} style={{ marginTop: "15px" }}>
-            {t("download_template")}
+        {results.length > 0 && (
+          <button
+            className="cta-button"
+            onClick={downloadResults}
+            style={{ marginTop: "15px" }}
+          >
+            Download Results
           </button>
-        </div>
+        )}
+        <button
+          className="cta-button"
+          onClick={handleDownloadTemplate}
+          style={{ marginTop: "15px" }}
+        >
+          Download Template
+        </button>
       </section>
 
-      {/* Pricing */}
       <section className="pricing">
-        <h2>{t("pricing_title")}</h2>
+        <h2>Pricing</h2>
         <table>
-          <thead>
-            <tr>
-              <th>{t("service")}</th>
-              <th>{t("price")}</th>
-            </tr>
-          </thead>
           <tbody>
             <tr>
-              <td>{t("validation_service")}</td>
-              <td>{t("validation_price")}</td>
+              <td>Validation</td>
+              <td>Free</td>
             </tr>
             <tr>
-              <td>{t("additional_rows")}</td>
-              <td>{t("additional_rows_price")}</td>
+              <td>First 10 rows</td>
+              <td>Free</td>
+            </tr>
+            <tr>
+              <td>Additional rows</td>
+              <td>$0.10</td>
             </tr>
             <tr>
               <td>
-                {t("buy_50_rows")}
-                <div id="paypal-container-SZHCMQ36L2RAU-pricing" style={{ marginTop: "8px" }}></div>
+                Buy 50 rows{" "}
+                <div
+                  id="paypal-container-SZHCMQ36L2RAU-pricing"
+                  style={{ marginTop: "8px" }}
+                ></div>
               </td>
-              <td>{t("buy_50_price")}</td>
+              <td>$5.00</td>
             </tr>
           </tbody>
         </table>
@@ -310,7 +282,8 @@ function App() {
 
       <footer>
         <p>
-          {t("footer_text")} <a href="https://docs.distance.tools">{t("footer_link")}</a> {t("footer_contact")}
+          Made with care •{" "}
+          <a href="https://docs.distance.tools">Documentation</a>
         </p>
       </footer>
     </div>
