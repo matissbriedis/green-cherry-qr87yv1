@@ -1,10 +1,9 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import "./Landing.css";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 
 const GEOAPIFY_API_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
 
@@ -111,12 +110,7 @@ function App() {
 
   const validateData = (rows) => {
     const dupes = rows
-      .filter(
-        (r, i) =>
-          rows.findIndex(
-            (x, j) => j !== i && x.From === r.From && x.To === r.To
-          ) !== -1
-      )
+      .filter((r, i) => rows.findIndex((x, j) => j !== i && x.From === r.From && x.To === r.To) !== -1)
       .map((d) => `${d.From} - ${d.To}`);
     const price = Math.max(0, (rows.length - 10) * 0.1).toFixed(2);
     setValidation({ duplicates: [...new Set(dupes)], price: `€${price}` });
@@ -163,9 +157,7 @@ function App() {
   const geocode = async (addr) => {
     if (!GEOAPIFY_API_KEY) return null;
     try {
-      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-        addr
-      )}&apiKey=${GEOAPIFY_API_KEY}`;
+      const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(addr)}&apiKey=${GEOAPIFY_API_KEY}`;
       const r = await fetch(url, { credentials: "omit" });
       if (!r.ok) return null;
       const j = await r.json();
@@ -191,10 +183,7 @@ function App() {
   return (
     <div className="app">
       {/* Language */}
-      <div
-        className="language-section"
-        style={{ padding: "20px", textAlign: "center" }}
-      >
+      <div className="language-section" style={{ padding: "20px", textAlign: "center" }}>
         <label>{t("toggle_language")}:</label>
         <select value={language} onChange={handleLanguageChange}>
           <option value="en">English</option>
@@ -208,15 +197,13 @@ function App() {
       <header className="hero">
         <h1>Bulk Distance Calculator – Free Excel & CSV Tool</h1>
         <p>
-          Calculate <strong>thousands of distances</strong> in seconds. Upload
-          Excel/CSV → Get accurate driving distances.
+          Calculate <strong>thousands of distances</strong> in seconds. 
+          Upload Excel/CSV → Get accurate driving distances. 
           <strong>Free for 10 rows</strong>.
         </p>
         <button
           className="cta-button"
-          onClick={() =>
-            document.getElementById("upload-section")?.scrollIntoView()
-          }
+          onClick={() => document.getElementById("upload-section")?.scrollIntoView()}
         >
           Start Now – It's Free
         </button>
@@ -251,18 +238,10 @@ function App() {
       <section id="upload-section" className="upload-section">
         <h2>Upload Your File</h2>
         <div className="upload-container">
-          <input
-            type="file"
-            accept=".xlsx,.csv"
-            onChange={handleFileUpload}
-            disabled={isUploading}
-          />
+          <input type="file" accept=".xlsx,.csv" onChange={handleFileUpload} disabled={isUploading} />
           {isUploading && (
             <div className="progress-bar">
-              <div
-                className="progress"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+              <div className="progress" style={{ width: `${uploadProgress}%` }}></div>
             </div>
           )}
 
@@ -279,17 +258,11 @@ function App() {
 
                   {data.length > 10 + paidRows ? (
                     <div style={{ margin: "20px 0", textAlign: "center" }}>
-                      <p style={{ color: "red", fontWeight: "bold" }}>
-                        Purchase additional rows
-                      </p>
+                      <p style={{ color: "red", fontWeight: "bold" }}>Purchase additional rows</p>
                       <div id="paypal-container-SZHCMQ36L2RAU"></div>
                     </div>
                   ) : (
-                    <button
-                      className="cta-button"
-                      onClick={calculateDistances}
-                      disabled={isCalculating}
-                    >
+                    <button className="cta-button" onClick={calculateDistances} disabled={isCalculating}>
                       {t("calculate")}
                     </button>
                   )}
@@ -299,19 +272,11 @@ function App() {
           )}
 
           {results.length > 0 && (
-            <button
-              className="cta-button"
-              onClick={downloadResults}
-              style={{ marginTop: "15px" }}
-            >
+            <button className="cta-button" onClick={downloadResults} style={{ marginTop: "15px" }}>
               Download Results
             </button>
           )}
-          <button
-            className="cta-button"
-            onClick={handleDownloadTemplate}
-            style={{ marginTop: "15px" }}
-          >
+          <button className="cta-button" onClick={handleDownloadTemplate} style={{ marginTop: "15px" }}>
             Download Template
           </button>
         </div>
@@ -343,10 +308,7 @@ function App() {
             <tr>
               <td>
                 Buy 50 rows
-                <div
-                  id="paypal-container-SZHCMQ36L2RAU-pricing"
-                  style={{ marginTop: "8px" }}
-                ></div>
+                <div id="paypal-container-SZHCMQ36L2RAU-pricing" style={{ marginTop: "8px" }}></div>
               </td>
               <td>€5.00</td>
             </tr>
@@ -355,17 +317,11 @@ function App() {
       </section>
 
       {/* FAQ */}
-      <section
-        className="faq"
-        style={{ padding: "40px 20px", background: "#f9f9f9" }}
-      >
+      <section className="faq" style={{ padding: "40px 20px", background: "#f9f9f9" }}>
         <h2>Frequently Asked Questions</h2>
         <details>
           <summary>How does it work?</summary>
-          <p>
-            Upload Excel/CSV with "From" and "To" columns. We calculate driving
-            distances using Geoapify.
-          </p>
+          <p>Upload Excel/CSV with "From" and "To" columns. We calculate driving distances using Geoapify.</p>
         </details>
         <details>
           <summary>Is it free?</summary>
@@ -379,12 +335,9 @@ function App() {
 
       <footer>
         <p>
-          Made with care •{" "}
-          <a href="https://docs.distance.tools">Documentation</a>
+          Made with care • <a href="https://docs.distance.tools">Documentation</a>
         </p>
       </footer>
-
-      <SpeedInsights />
     </div>
   );
 }
