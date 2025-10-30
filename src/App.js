@@ -43,6 +43,8 @@ function App() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    window.trackFileUpload(); // GA4: Track upload
+
     const allowed = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "text/csv",
@@ -109,6 +111,8 @@ function App() {
     if (!GEOAPIFY_API_KEY) return setError("API key missing.");
     if (!validation || data.length === 0) return setError("No data.");
 
+    window.trackCalculationStart(data.length); // GA4: Track calculation
+
     const totalAllowed = 10 + paidRows;
     if (data.length > totalAllowed) {
       setError(`Need more rows. You have ${paidRows} paid.`);
@@ -162,6 +166,7 @@ function App() {
 
   const downloadResults = () => {
     if (!results.length) return;
+    window.trackDownload(); // GA4: Track download
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(results);
     XLSX.utils.book_append_sheet(wb, ws, "Results");
@@ -170,7 +175,7 @@ function App() {
 
   return (
     <div className="app">
-      {/* HERO — BLACK TEXT ON LIGHT GRAY */}
+      {/* HERO */}
       <header
         className="hero"
         style={{
@@ -224,7 +229,7 @@ function App() {
         </p>
       </header>
 
-      {/* ENGAGING CONTENT SECTION */}
+      {/* CONTENT */}
       <section
         className="content-section"
         style={{
@@ -379,7 +384,7 @@ function App() {
         </div>
       </section>
 
-      {/* UPLOAD SECTION */}
+      {/* UPLOAD SECTION WITH SPINNER */}
       <section
         id="upload-section"
         className="upload-section"
@@ -391,15 +396,37 @@ function App() {
             type="file"
             accept=".xlsx,.csv"
             onChange={handleFileUpload}
-            disabled={isUploading}
+            disabled={isUploading || isCalculating}
             style={{ display: "block", margin: "20px auto" }}
           />
+
+          {(isUploading || isCalculating) && (
+            <div style={{ textAlign: "center", margin: "30px 0" }}>
+              <div
+                style={{
+                  display: "inline-block",
+                  width: "40px",
+                  height: "40px",
+                  border: "4px solid #f3f3f3",
+                  borderTop: "4px solid #007bff",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite",
+                }}
+              ></div>
+              <p style={{ marginTop: "10px", color: "#555" }}>
+                {isUploading
+                  ? "Uploading & validating..."
+                  : "Calculating distances..."}
+              </p>
+            </div>
+          )}
+
           {isUploading && (
             <div
               style={{
                 background: "#eee",
-                height: "10px",
-                borderRadius: "5px",
+                height: "6px",
+                borderRadius: "3px",
                 overflow: "hidden",
                 margin: "20px 0",
               }}
@@ -415,7 +442,7 @@ function App() {
             </div>
           )}
 
-          {validation && (
+          {validation && !isCalculating && (
             <div
               style={{
                 background: "#f8f9fa",
@@ -452,9 +479,13 @@ function App() {
                       className="cta-button"
                       onClick={calculateDistances}
                       disabled={isCalculating}
-                      style={{ width: "100%", marginTop: "15px" }}
+                      style={{
+                        width: "100%",
+                        marginTop: "15px",
+                        fontSize: "1.1em",
+                      }}
                     >
-                      {isCalculating ? "Calculating..." : "Calculate Distances"}
+                      Calculate Distances
                     </button>
                   )}
                 </div>
@@ -462,15 +493,21 @@ function App() {
             </div>
           )}
 
-          {results.length > 0 && (
+          {results.length > 0 && !isCalculating && (
             <button
               className="cta-button"
               onClick={downloadResults}
-              style={{ width: "100%", marginTop: "15px" }}
+              style={{
+                width: "100%",
+                marginTop: "15px",
+                background: "#28a745",
+                fontSize: "1.1em",
+              }}
             >
               Download Results (Excel)
             </button>
           )}
+
           <button
             className="cta-button"
             onClick={handleDownloadTemplate}
