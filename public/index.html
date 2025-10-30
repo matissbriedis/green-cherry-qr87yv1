@@ -31,6 +31,48 @@
     <!-- Google Verification -->
     <meta name="google-site-verification" content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk" />
 
+    <!-- Google Analytics 4 - YOUR ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3GGB7GLZ2Y', {
+        page_title: document.title,
+        page_location: window.location.href
+      });
+
+      // Track PayPal Button Clicks
+      function trackPayPalClick(buttonId) {
+        gtag('event', 'paypal_click', {
+          button_id: buttonId,
+          value: buttonId.includes('pricing') ? 5 : 5,
+          currency: 'USD'
+        });
+      }
+
+      // Track File Upload
+      function trackFileUpload() {
+        gtag('event', 'file_upload', {
+          file_type: 'xlsx_or_csv'
+        });
+      }
+
+      // Track Calculation Start
+      function trackCalculationStart(rows) {
+        gtag('event', 'calculation_start', {
+          row_count: rows
+        });
+      }
+
+      // Track Download
+      function trackDownload() {
+        gtag('event', 'download_results', {
+          format: 'xlsx'
+        });
+      }
+    </script>
+
     <!-- AdSense Auto Ads -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1735278035868561"
          crossorigin="anonymous"></script>
@@ -42,7 +84,7 @@
       async
     ></script>
 
-    <!-- PayPal Render -->
+    <!-- PayPal Render + GA4 Tracking -->
     <script>
       function renderPayPalButtons() {
         if (window.paypal && typeof window.paypal.HostedButtons === "function") {
@@ -50,7 +92,16 @@
             const el = document.getElementById(id);
             if (el) {
               window.paypal.HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
-                .render(`#${id}`).catch(console.error);
+                .render(`#${id}`)
+                .then(() => {
+                  setTimeout(() => {
+                    const btn = document.querySelector(`#${id} button`);
+                    if (btn) {
+                      btn.onclick = () => trackPayPalClick(id);
+                    }
+                  }, 1000);
+                })
+                .catch(console.error);
             }
           });
         } else {
@@ -59,6 +110,14 @@
       }
       window.addEventListener("load", () => setTimeout(renderPayPalButtons, 300));
     </script>
+
+    <!-- Spinner Animation -->
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
