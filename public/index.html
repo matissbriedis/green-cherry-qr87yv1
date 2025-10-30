@@ -4,18 +4,7 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <title>Bulk Distance Calculator – Free Excel & CSV Tool</title>
-
-    <!-- SEO -->
-    <meta
-      name="description"
-      content="Calculate 1000s of distances instantly from Excel or CSV. Free for 10 rows."
-    />
-    <meta
-      name="keywords"
-      content="bulk distance calculator, excel distance tool, csv distance matrix"
-    />
+    <title>Bulk Distance Calculator</title>
 
     <!-- GA4 -->
     <script
@@ -31,7 +20,6 @@
       gtag("config", "G-3GGB7GLZ2Y");
     </script>
 
-    <!-- Spinner Animation -->
     <style>
       @keyframes spin {
         0% {
@@ -41,10 +29,46 @@
           transform: rotate(360deg);
         }
       }
+      .btn {
+        display: inline-block;
+        width: 100%;
+        padding: 12px;
+        margin: 15px 0;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1em;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+      .primary {
+        background: #007bff;
+        color: white;
+      }
+      .success {
+        background: #28a745;
+        color: white;
+      }
+      .secondary {
+        background: #6c757d;
+        color: white;
+      }
+      .cta {
+        font-size: 1.2em;
+        padding: 14px 32px;
+        border-radius: 8px;
+      }
     </style>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>You need JavaScript enabled.</noscript>
     <div id="root"></div>
   </body>
 </html>
