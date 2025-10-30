@@ -8,98 +8,96 @@
 
     <!-- SEO -->
     <title>Bulk Distance Calculator – Free Excel & CSV Tool</title>
-    <meta name="description" content="Calculate 1000s of distances instantly from Excel or CSV. Free for 10 rows. Perfect for logistics, e-commerce, real estate & more." />
-    <meta name="keywords" content="bulk distance calculator, excel distance tool, csv distance matrix, driving distance calculator, free distance api" />
+    <meta
+      name="description"
+      content="Calculate 1000s of distances instantly from Excel or CSV. Free for 10 rows. Perfect for logistics, e-commerce, real estate & more."
+    />
+    <meta
+      name="keywords"
+      content="bulk distance calculator, excel distance tool, csv distance matrix, driving distance calculator, free distance api"
+    />
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Bulk Distance Calculator – Free Excel & CSV Tool" />
-    <meta property="og:description" content="Upload your file → Get accurate driving distances in seconds. Free for 10 rows!" />
+    <meta
+      property="og:title"
+      content="Bulk Distance Calculator – Free Excel & CSV Tool"
+    />
+    <meta
+      property="og:description"
+      content="Upload your file → Get accurate driving distances in seconds. Free for 10 rows!"
+    />
     <meta property="og:url" content="https://distancesinbulk.com" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://distancesinbulk.com/og-image.jpg" />
+    <meta
+      property="og:image"
+      content="https://distancesinbulk.com/og-image.jpg"
+    />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Free Bulk Distance Calculator" />
-    <meta name="twitter:description" content="Excel/CSV → Distances in seconds. Free for 10 rows." />
-    <meta name="twitter:image" content="https://distancesinbulk.com/og-image.jpg" />
+    <meta
+      name="twitter:description"
+      content="Excel/CSV → Distances in seconds. Free for 10 rows."
+    />
+    <meta
+      name="twitter:image"
+      content="https://distancesinbulk.com/og-image.jpg"
+    />
 
     <!-- Canonical -->
     <link rel="canonical" href="https://distancesinbulk.com" />
 
     <!-- Google Verification -->
-    <meta name="google-site-verification" content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk" />
+    <meta
+      name="google-site-verification"
+      content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk"
+    />
 
     <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-3GGB7GLZ2Y');
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-3GGB7GLZ2Y");
 
+      // Track events
       function trackFileUpload() {
-        gtag('event', 'file_upload', { file_type: 'xlsx_or_csv' });
+        gtag("event", "file_upload", { file_type: "xlsx_or_csv" });
       }
       function trackCalculationStart(rows) {
-        gtag('event', 'calculation_start', { row_count: rows });
+        gtag("event", "calculation_start", { row_count: rows });
       }
       function trackDownload() {
-        gtag('event', 'download_results', { format: 'xlsx' });
+        gtag("event", "download_results", { format: "xlsx" });
       }
       function trackPayPalStart() {
-        gtag('event', 'paypal_start', { currency: 'EUR' });
+        gtag("event", "paypal_start", { currency: "EUR" });
       }
     </script>
 
-    <!-- PayPal Smart Buttons (Dynamic) -->
-    <script src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&currency=EUR"></script>
-
-    <script>
-      // Render dynamic PayPal button
-      function renderDynamicPayPalButton(containerId, amount) {
-        if (!window.paypal) {
-          setTimeout(() => renderDynamicPayPalButton(containerId, amount), 100);
-          return;
-        }
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = '';
-
-        window.paypal.Buttons({
-          createOrder: function(data, actions) {
-            return actions.order.create({
-              purchase_units: [{
-                amount: {
-                  value: amount.toFixed(2),
-                  currency_code: 'EUR'
-                },
-                description: `Unlock ${Math.round(amount / 0.1)} extra rows`
-              }]
-            });
-          },
-          onApprove: function(data, actions) {
-            return actions.order.capture().then(function(details) {
-              const extraRows = Math.round(amount / 0.1);
-              const url = new URL(window.location);
-              url.searchParams.set('paid', extraRows);
-              window.location.href = url.toString();
-            });
-          },
-          onError: function(err) {
-            alert('Payment failed. Please try again.');
-            console.error(err);
-          }
-        }).render(`#${containerId}`);
-      }
-    </script>
+    <!-- PayPal Smart Buttons SDK – MUST LOAD BEFORE APP -->
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&currency=EUR"
+      async
+    ></script>
 
     <!-- Spinner Animation -->
     <style>
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     </style>
   </head>

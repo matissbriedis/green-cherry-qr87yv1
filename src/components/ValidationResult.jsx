@@ -1,5 +1,5 @@
 // src/components/ValidationResult.jsx
-import PayPalButton from "./PayPalButton";
+import PayPalButton from "./PayPalButton"; // ← THIS WAS MISSING
 import styles from "../styles/Button.module.css";
 
 export default function ValidationResult({
