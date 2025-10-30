@@ -1,4 +1,6 @@
+// src/components/UploadSection.jsx
 import { useState } from "react";
+import styles from "../styles/Button.module.css";
 
 export default function UploadSection({
   onFileUpload,
@@ -14,6 +16,13 @@ export default function UploadSection({
       setFile(f);
       onFileUpload(f);
     }
+  };
+
+  const downloadTemplate = () => {
+    const a = document.createElement("a");
+    a.href = "/distance_template.xlsx";
+    a.download = "distance_template.xlsx";
+    a.click();
   };
 
   return (
@@ -70,6 +79,14 @@ export default function UploadSection({
         )}
 
         {children}
+
+        {/* DOWNLOAD TEMPLATE BUTTON */}
+        <button
+          onClick={downloadTemplate}
+          className={`${styles.button} ${styles.secondary}`}
+        >
+          Download Template
+        </button>
       </div>
     </section>
   );
