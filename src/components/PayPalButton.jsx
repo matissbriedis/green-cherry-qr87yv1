@@ -1,11 +1,18 @@
+// src/components/PayPalButton.jsx
+import { useEffect } from "react";
+
 export default function PayPalButton({ amount, onSuccess }) {
   useEffect(() => {
     if (!amount || amount <= 0) return;
 
     const container = document.getElementById("paypal-dynamic-button");
     if (!container) return;
-
     container.innerHTML = "";
+
+    if (!window.paypal) {
+      setTimeout(() => {}, 100);
+      return;
+    }
 
     window.paypal
       .Buttons({
@@ -24,7 +31,7 @@ export default function PayPalButton({ amount, onSuccess }) {
             onSuccess(Math.round(amount / 0.1));
           });
         },
-        onError: () => alert("Payment failed. Try again."),
+        onError: () => alert("Payment failed"),
       })
       .render("#paypal-dynamic-button");
   }, [amount, onSuccess]);
