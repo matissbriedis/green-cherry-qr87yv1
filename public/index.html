@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bulk Distance Calculator</title>
+    <title>Bulk Distance Calculator – Free Excel & CSV Tool</title>
 
     <!-- GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"></script>
@@ -15,43 +15,143 @@
       gtag('config', 'G-3GGB7GLZ2Y');
     </script>
 
+    <!-- FULL STYLES -->
     <style>
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; color: #333; line-height: 1.6; }
-      .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        background: #f8f9fa; 
+        color: #333; 
+        line-height: 1.7; 
+      }
+      .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+      /* HERO */
+      .hero {
+        text-align: center; 
+        padding: 80px 20px; 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        animation: fadeIn 1s ease;
+      }
+      .hero h1 { 
+        font-size: 2.8em; 
+        margin-bottom: 16px; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      .hero p { 
+        font-size: 1.4em; 
+        max-width: 700px; 
+        margin: 0 auto 30px; 
+        opacity: 0.9;
+      }
+
+      /* BUTTONS */
       .btn {
         display: inline-block;
         width: 100%;
-        padding: 14px;
+        padding: 16px;
         margin: 15px 0;
         border: none;
         border-radius: 8px;
-        font-size: 1.1em;
+        font-size: 1.2em;
         font-weight: 600;
         text-align: center;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         text-decoration: none;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
       }
       .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
       }
       .primary { background: #007bff; color: white; }
       .success { background: #28a745; color: white; }
       .secondary { background: #6c757d; color: white; }
-      .hero { text-align: center; padding: 60px 20px; background: #f1f3f5; }
-      .hero h1 { font-size: 2.4em; color: #2c3e50; margin-bottom: 16px; }
-      .hero p { font-size: 1.3em; max-width: 700px; margin: 0 auto 20px; }
-      .upload { background: white; padding: 40px 20px; }
-      .validation { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-      .success-banner {
-        background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; font-weight: 600;
+      .cta { 
+        font-size: 1.4em; 
+        padding: 18px 40px; 
+        border-radius: 12px;
+        background: #ff6b6b;
+        box-shadow: 0 6px 12px rgba(255,107,107,0.4);
       }
+      .cta:hover { background: #ff5252; }
+
+      /* UPLOAD SECTION */
+      .upload {
+        background: white;
+        padding: 50px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin: 40px 0;
+      }
+      .upload h2 { 
+        text-align: center; 
+        margin-bottom: 30px; 
+        color: #2c3e50; 
+        font-size: 2em;
+      }
+
+      /* VALIDATION */
+      .validation {
+        background: #f1f3f5;
+        padding: 25px;
+        border-radius: 10px;
+        margin: 25px 0;
+        border-left: 5px solid #007bff;
+      }
+      .validation h3 { 
+        color: #2c3e50; 
+        margin-bottom: 15px; 
+        font-size: 1.5em;
+      }
+
+      /* SUCCESS BANNER */
+      .success-banner {
+        background: #d4edda;
+        color: #155724;
+        padding: 18px;
+        border-radius: 10px;
+        margin: 25px 0;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1.1em;
+        border: 1px solid #c3e6cb;
+        animation: fadeIn 0.5s ease;
+      }
+
+      /* SPINNER */
       .spinner {
-        display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; animation: spin 1s linear infinite;
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #007bff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+      }
+
+      /* PRICING */
+      .pricing {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+      }
+      .pricing h2 { font-size: 2.2em; color: #2c3e50; margin-bottom: 20px; }
+      .price { font-size: 3em; font-weight: 800; color: #d63384; }
+
+      /* FOOTER */
+      footer {
+        text-align: center;
+        padding: 40px;
+        background: #343a40;
+        color: white;
+        margin-top: 60px;
       }
     </style>
   </head>
