@@ -6,218 +6,267 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bulk Distance Calculator – Free Excel & CSV Tool</title>
 
+    <!-- SEO -->
+    <meta name="description" content="Free bulk distance calculator for Excel & CSV. Calculate 1000s of driving distances instantly. First 10 rows free. €0.10 per extra row." />
+    <meta name="keywords" content="bulk distance calculator, excel distance tool, csv distance matrix, driving distance calculator, free distance api, batch distance calculator, google maps alternative, distance calculator faq" />
+    <meta name="robots" content="index, follow" />
+
     <!-- GA4 -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"
-    ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-3GGB7GLZ2Y");
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3GGB7GLZ2Y');
     </script>
 
-    <!-- FULL STYLES -->
+    <!-- JSON-LD FAQ SCHEMA -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How does the bulk distance calculator work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Upload your Excel or CSV file with 'From' and 'To' addresses. The tool uses premium geocoding and routing APIs to calculate real driving distances (not straight-line). Results are returned in a downloadable Excel file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the first 10 rows really free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! The first 10 rows are 100% free, no credit card required. For more rows, pay just €0.10 per extra row via PayPal. No subscription."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What file formats are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We support both .xlsx (Excel) and .csv files. Download our free template to get started in seconds."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files secure?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely. Files are processed in memory and automatically deleted after calculation. No data is stored on our servers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I calculate distances between cities or countries?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! The tool works globally. Enter any address, city, or postal code — it will find the correct route using real road networks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why not just use Google Maps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Google Maps limits bulk calculations and requires a paid API. Our tool handles thousands of rows instantly with no setup."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate are the distances?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Distances are calculated using premium routing APIs that consider actual roads, one-way streets, and traffic rules — just like a GPS."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need an API key?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No! Everything is handled on our side. Just upload your file and get results."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- STYLES -->
     <style>
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+        background: #f8f9fa; 
+        color: #333; 
+        line-height: 1.8; 
       }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        background: #f8f9fa;
-        color: #333;
-        line-height: 1.7;
-      }
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-      }
+      .container { max-width: 900px; margin: 0 auto; padding: 20px; }
 
-      /* HERO */
       .hero {
-        text-align: center;
-        padding: 80px 20px;
+        text-align: center; 
+        padding: 90px 20px; 
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         animation: fadeIn 1s ease;
       }
-      .hero h1 {
-        font-size: 2.8em;
-        margin-bottom: 16px;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      .hero h1 { 
+        font-size: 2.9em; 
+        margin-bottom: 18px; 
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
       }
-      .hero p {
-        font-size: 1.4em;
-        max-width: 700px;
-        margin: 0 auto 20px;
-        opacity: 0.9;
+      .hero p { 
+        font-size: 1.45em; 
+        max-width: 720px; 
+        margin: 0 auto 22px; 
+        opacity: 0.94;
       }
 
-      /* BUTTONS */
       .btn {
         display: inline-block;
         width: 100%;
-        padding: 16px;
-        margin: 15px 0;
+        padding: 17px;
+        margin: 16px 0;
         border: none;
-        border-radius: 8px;
-        font-size: 1.2em;
+        border-radius: 10px;
+        font-size: 1.22em;
         font-weight: 600;
         text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
         text-decoration: none;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.16);
       }
       .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.22);
       }
-      .primary {
-        background: #007bff;
-        color: white;
-      }
-      .success {
-        background: #28a745;
-        color: white;
-      }
-      .secondary {
-        background: #6c757d;
-        color: white;
-      }
-      .cta {
-        font-size: 1.4em;
-        padding: 18px 40px;
-        border-radius: 12px;
+      .primary { background: #007bff; color: white; }
+      .success { background: #28a745; color: white; }
+      .secondary { background: #6c757d; color: white; }
+      .cta { 
+        font-size: 1.5em; 
+        padding: 20px 45px; 
+        border-radius: 14px;
         background: #ff6b6b;
-        box-shadow: 0 6px 12px rgba(255, 107, 107, 0.4);
+        box-shadow: 0 7px 14px rgba(255,107,107,0.45);
       }
-      .cta:hover {
-        background: #ff5252;
-      }
+      .cta:hover { background: #ff5252; }
 
-      /* UPLOAD SECTION */
       .upload {
         background: white;
-        padding: 50px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        margin: 40px 0;
+        padding: 55px 25px;
+        border-radius: 14px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+        margin: 45px 0;
       }
-      .upload h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #2c3e50;
-        font-size: 2em;
+      .upload h2 { 
+        text-align: center; 
+        margin-bottom: 32px; 
+        color: #2c3e50; 
+        font-size: 2.1em;
       }
 
-      /* VALIDATION */
       .validation {
         background: #f1f3f5;
-        padding: 25px;
-        border-radius: 10px;
-        margin: 25px 0;
-        border-left: 5px solid #007bff;
+        padding: 28px;
+        border-radius: 12px;
+        margin: 28px 0;
+        border-left: 6px solid #007bff;
       }
-      .validation h3 {
-        color: #2c3e50;
-        margin-bottom: 15px;
-        font-size: 1.5em;
+      .validation h3 { 
+        color: #2c3e50; 
+        margin-bottom: 16px; 
+        font-size: 1.6em;
       }
 
-      /* SUCCESS BANNER */
       .success-banner {
         background: #d4edda;
         color: #155724;
-        padding: 18px;
-        border-radius: 10px;
-        margin: 25px 0;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 28px 0;
         text-align: center;
         font-weight: 600;
-        font-size: 1.1em;
+        font-size: 1.15em;
         border: 1px solid #c3e6cb;
         animation: fadeIn 0.5s ease;
       }
 
-      /* SPINNER */
       .spinner {
         display: inline-block;
-        width: 50px;
-        height: 50px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #007bff;
+        width: 55px;
+        height: 55px;
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #007bff;
         border-radius: 50%;
         animation: spin 1s linear infinite;
-        margin: 20px auto;
+        margin: 22px auto;
       }
 
-      /* CONTENT SECTION */
-      .content {
+      .content, .faq {
         background: white;
-        padding: 50px 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        margin: 40px 0;
-        line-height: 1.8;
+        padding: 55px 35px;
+        border-radius: 14px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+        margin: 45px 0;
+        line-height: 1.9;
       }
-      .content h2 {
-        font-size: 2em;
+      .content h2, .faq h2 {
         color: #2c3e50;
-        margin-bottom: 20px;
+        margin: 28px 0 22px;
+        font-size: 1.9em;
       }
-      .content p {
-        margin-bottom: 20px;
-        font-size: 1.1em;
+      .content h3, .faq h3 {
+        color: #2c3e50;
+        margin: 32px 0 18px;
+        font-size: 1.7em;
+      }
+      .content p, .faq p, .faq li {
+        margin-bottom: 18px;
+        font-size: 1.12em;
+      }
+      .faq details {
+        margin-bottom: 22px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 18px;
+      }
+      .faq summary {
+        font-weight: 600;
+        font-size: 1.15em;
+        cursor: pointer;
+        color: #2c3e50;
+        padding: 12px 0;
+        outline: none;
+      }
+      .faq summary:hover {
+        color: #007bff;
+      }
+      .faq p {
+        margin-top: 12px;
+        padding-left: 20px;
       }
 
-      /* PRICING */
       .pricing {
         text-align: center;
-        padding: 60px 20px;
+        padding: 70px 20px;
         background: #f8f9fa;
       }
-      .pricing h2 {
-        font-size: 2.2em;
-        color: #2c3e50;
-        margin-bottom: 20px;
-      }
-      .price {
-        font-size: 3em;
-        font-weight: 800;
-        color: #d63384;
-      }
+      .pricing h2 { font-size: 2.3em; color: #2c3e50; margin-bottom: 22px; }
+      .price { font-size: 3.2em; font-weight: 800; color: #d63384; }
 
-      /* FOOTER */
       footer {
         text-align: center;
-        padding: 40px;
+        padding: 45px;
         background: #343a40;
         color: white;
-        margin-top: 60px;
+        margin-top: 70px;
+        font-size: 1.05em;
       }
     </style>
   </head>
