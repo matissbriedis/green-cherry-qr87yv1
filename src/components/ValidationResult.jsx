@@ -1,4 +1,6 @@
+// src/components/ValidationResult.jsx
 import PayPalButton from "./PayPalButton";
+import styles from "../styles/Button.module.css";
 
 export default function ValidationResult({
   data,
@@ -55,15 +57,7 @@ export default function ValidationResult({
           ) : (
             <button
               onClick={onCalculate}
-              style={{
-                width: "100%",
-                padding: "12px",
-                background: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                fontSize: "1.1em",
-              }}
+              className={`${styles.button} ${styles.primary}`}
             >
               Calculate Distances
             </button>
