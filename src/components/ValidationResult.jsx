@@ -1,17 +1,27 @@
 // src/components/ValidationResult.jsx
-import PayPalButton from "./PayPalButton"; // ← CORRECT PATH
 import styles from "../styles/Button.module.css";
 
 export default function ValidationResult({
   data,
   paidRows,
-  onUnlock,
   onCalculate,
   validation,
   error,
 }) {
   const needed = Math.max(0, data.length - 10 - paidRows);
   const amount = needed * 0.1;
+
+  // REPLACE WITH YOUR PAYPAL EMAIL
+  const PAYPAL_EMAIL = "your-paypal-email@example.com";
+
+  const paypalUrl =
+    needed > 0
+      ? `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${PAYPAL_EMAIL}&item_name=Unlock ${needed} extra rows&item_number=${needed}&amount=${amount.toFixed(
+          2
+        )}&currency_code=EUR&return=${encodeURIComponent(
+          window.location.origin + `?paid=${needed}`
+        )}&notify_url=${encodeURIComponent(window.location.origin + "/ipn")}`
+      : null;
 
   return (
     <div
@@ -43,29 +53,25 @@ export default function ValidationResult({
 
           {needed > 0 ? (
             <div style={{ textAlign: "center", margin: "25px 0" }}>
-              <p
-                style={{
-                  color: "#d63384",
-                  fontWeight: "bold",
-                  fontSize: "1.1em",
-                }}
-              >
+              <p style={{ color: "#d63384", fontWeight: "bold" }}>
                 Need {needed} more row{needed > 1 ? "s" : ""}
               </p>
-              <p
-                style={{
-                  fontSize: "1.3em",
-                  margin: "15px 0",
-                  color: "#2c3e50",
-                }}
-              >
+              <p style={{ fontSize: "1.3em", margin: "15px 0" }}>
                 Pay <strong>€{amount.toFixed(2)}</strong>
               </p>
-              <PayPalButton amount={amount} onSuccess={onUnlock} />
+              <a
+                href={paypalUrl}
+                target="_blank"
+                rel="noopener"
+                className={`${styles.button} ${styles.primary}`}
+                style={{ display: "inline-block", textDecoration: "none" }}
+              >
+                Pay with PayPal
+              </a>
               <p
                 style={{ fontSize: "0.9em", color: "#666", marginTop: "10px" }}
               >
-                €0.10 per extra row • Instant unlock
+                €0.10 per extra row • Instant unlock after payment
               </p>
             </div>
           ) : (
