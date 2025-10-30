@@ -173,7 +173,11 @@ function App() {
         <button
           className="cta-button"
           style={{ fontSize: "1.2em", padding: "14px 32px" }}
-          onClick={() => document.getElementById("upload-section")?.scrollIntoView({ behavior: "smooth" })}
+          onClick={() =>
+            document
+              .getElementById("upload-section")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
         >
           Start Calculating Now
         </button>
