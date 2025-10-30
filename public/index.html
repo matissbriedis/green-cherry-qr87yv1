@@ -31,84 +31,68 @@
     <!-- Google Verification -->
     <meta name="google-site-verification" content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk" />
 
-    <!-- Google Analytics 4 - YOUR ID -->
+    <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GGB7GLZ2Y"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-3GGB7GLZ2Y', {
-        page_title: document.title,
-        page_location: window.location.href
-      });
+      gtag('config', 'G-3GGB7GLZ2Y');
 
-      // Track PayPal Button Clicks
-      function trackPayPalClick(buttonId) {
-        gtag('event', 'paypal_click', {
-          button_id: buttonId,
-          value: buttonId.includes('pricing') ? 5 : 5,
-          currency: 'USD'
-        });
-      }
-
-      // Track File Upload
       function trackFileUpload() {
-        gtag('event', 'file_upload', {
-          file_type: 'xlsx_or_csv'
-        });
+        gtag('event', 'file_upload', { file_type: 'xlsx_or_csv' });
       }
-
-      // Track Calculation Start
       function trackCalculationStart(rows) {
-        gtag('event', 'calculation_start', {
-          row_count: rows
-        });
+        gtag('event', 'calculation_start', { row_count: rows });
       }
-
-      // Track Download
       function trackDownload() {
-        gtag('event', 'download_results', {
-          format: 'xlsx'
-        });
+        gtag('event', 'download_results', { format: 'xlsx' });
+      }
+      function trackPayPalStart() {
+        gtag('event', 'paypal_start', { currency: 'EUR' });
       }
     </script>
 
-    <!-- AdSense Auto Ads -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1735278035868561"
-         crossorigin="anonymous"></script>
+    <!-- PayPal Smart Buttons (Dynamic) -->
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&currency=EUR"></script>
 
-    <!-- PayPal SDK -->
-    <script
-      src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&components=hosted-buttons&disable-funding=venmo&currency=USD"
-      crossorigin="anonymous"
-      async
-    ></script>
-
-    <!-- PayPal Render + GA4 Tracking -->
     <script>
-      function renderPayPalButtons() {
-        if (window.paypal && typeof window.paypal.HostedButtons === "function") {
-          ["paypal-container-SZHCMQ36L2RAU", "paypal-container-SZHCMQ36L2RAU-pricing"].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-              window.paypal.HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
-                .render(`#${id}`)
-                .then(() => {
-                  setTimeout(() => {
-                    const btn = document.querySelector(`#${id} button`);
-                    if (btn) {
-                      btn.onclick = () => trackPayPalClick(id);
-                    }
-                  }, 1000);
-                })
-                .catch(console.error);
-            }
-          });
-        } else {
-          setTimeout(renderPayPalButtons, 100);
+      // Render dynamic PayPal button
+      function renderDynamicPayPalButton(containerId, amount) {
+        if (!window.paypal) {
+          setTimeout(() => renderDynamicPayPalButton(containerId, amount), 100);
+          return;
         }
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        window.paypal.Buttons({
+          createOrder: function(data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: amount.toFixed(2),
+                  currency_code: 'EUR'
+                },
+                description: `Unlock ${Math.round(amount / 0.1)} extra rows`
+              }]
+            });
+          },
+          onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+              const extraRows = Math.round(amount / 0.1);
+              const url = new URL(window.location);
+              url.searchParams.set('paid', extraRows);
+              window.location.href = url.toString();
+            });
+          },
+          onError: function(err) {
+            alert('Payment failed. Please try again.');
+            console.error(err);
+          }
+        }).render(`#${containerId}`);
       }
-      window.addEventListener("load", () => setTimeout(renderPayPalButtons, 300));
     </script>
 
     <!-- Spinner Animation -->
