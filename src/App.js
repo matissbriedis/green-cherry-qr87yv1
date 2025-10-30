@@ -6,7 +6,6 @@ import ValidationResult from "./components/ValidationResult";
 import PricingSection from "./components/PricingSection";
 import Footer from "./components/Footer";
 import useDistanceCalculator from "./hooks/useDistanceCalculator";
-import styles from "./styles/Button.module.css";
 
 export default function App() {
   const {
@@ -19,10 +18,12 @@ export default function App() {
     error,
     handleFile,
     calculate,
-    download,
+    download
   } = useDistanceCalculator();
+
   const [paidRows, setPaidRows] = useState(0);
 
+  // Handle ?paid=XX unlock
   useEffect(() => {
     const saved = localStorage.getItem("paidRows");
     if (saved) setPaidRows(parseInt(saved, 10));
@@ -31,17 +32,13 @@ export default function App() {
     const paid = params.get("paid");
     if (paid) {
       const num = parseInt(paid, 10);
-      setPaidRows(num);
-      localStorage.setItem("paidRows", num.toString());
+      if (num > 0) {
+        setPaidRows(prev => prev + num);
+        localStorage.setItem("paidRows", (prev + num).toString());
+      }
       window.history.replaceState({}, "", "/");
     }
   }, []);
-
-  const handleUnlock = (extra) => {
-    const total = paidRows + extra;
-    setPaidRows(total);
-    localStorage.setItem("paidRows", total.toString());
-  };
 
   return (
     <div className="app">
@@ -55,21 +52,23 @@ export default function App() {
           <ValidationResult
             data={data}
             paidRows={paidRows}
-            onUnlock={handleUnlock}
             onCalculate={() => calculate(paidRows)}
             validation={validation}
             error={error}
           />
         )}
+
         {results.length > 0 && !isCalculating && (
           <button
             onClick={download}
-            className={`${styles.button} ${styles.success}`}
+            className="button success"
+            style={{ width: "100%", marginTop: "15px" }}
           >
             Download Results (Excel)
           </button>
         )}
       </UploadSection>
+
       <PricingSection />
       <Footer />
     </div>
