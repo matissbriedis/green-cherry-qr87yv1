@@ -25,11 +25,20 @@ function App() {
     if (paid === "50") {
       setPaidRows(50);
       localStorage.setItem("paidRows", "50");
-      window.history.replaceState({}, "", "/");
+    } else if (paid === "100") {
+      setPaidRows(100);
+      localStorage.setItem("paidRows", "100");
+    } else if (paid === "500") {
+      setPaidRows(500);
+      localStorage.setItem("paidRows", "500");
+    } else if (paid === "1000") {
+      setPaidRows(1000);
+      localStorage.setItem("paidRows", "1000");
     } else {
       const saved = localStorage.getItem("paidRows");
       if (saved) setPaidRows(parseInt(saved, 10));
     }
+    window.history.replaceState({}, "", "/");
   }, []);
 
   const handleDownloadTemplate = () => {
@@ -42,8 +51,6 @@ function App() {
   const handleFileUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    window.trackFileUpload(); // GA4: Track upload
 
     const allowed = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -111,8 +118,6 @@ function App() {
     if (!GEOAPIFY_API_KEY) return setError("API key missing.");
     if (!validation || data.length === 0) return setError("No data.");
 
-    window.trackCalculationStart(data.length); // GA4: Track calculation
-
     const totalAllowed = 10 + paidRows;
     if (data.length > totalAllowed) {
       setError(`Need more rows. You have ${paidRows} paid.`);
@@ -166,7 +171,6 @@ function App() {
 
   const downloadResults = () => {
     if (!results.length) return;
-    window.trackDownload(); // GA4: Track download
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.json_to_sheet(results);
     XLSX.utils.book_append_sheet(wb, ws, "Results");
@@ -259,7 +263,7 @@ function App() {
           headaches.
         </p>
 
-        <h3>How It Works (It’s Ridiculously Simple)</h3>
+        <h3>How It Works (It's Ridiculously Simple)</h3>
         <ol style={{ fontSize: "1.1em" }}>
           <li>
             <strong>Download the template</strong> (or use your own file).
@@ -384,7 +388,7 @@ function App() {
         </div>
       </section>
 
-      {/* UPLOAD SECTION WITH SPINNER */}
+      {/* UPLOAD WITH SPINNER */}
       <section
         id="upload-section"
         className="upload-section"
