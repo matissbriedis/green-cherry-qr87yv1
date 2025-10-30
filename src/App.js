@@ -156,14 +156,12 @@ export default function App() {
       <div className="hero">
         <h1>Bulk Distance Calculator – Free Excel & CSV Tool</h1>
         <p>
-          Stop wasting hours on Google Maps. Upload your file and calculate{" "}
-          <strong>thousands of driving distances in seconds</strong>.
+          Calculate <strong>thousands of driving distances</strong> from Excel
+          or CSV in seconds. No API key. No coding.
         </p>
         <p>
-          <strong style={{ color: "#d63384" }}>
-            Free for the first 10 rows
-          </strong>
-          .
+          <strong style={{ color: "#ff9f1c" }}>First 10 rows FREE</strong> •
+          €0.10 per extra row
         </p>
         <button
           className="btn cta"
@@ -173,48 +171,50 @@ export default function App() {
               ?.scrollIntoView({ behavior: "smooth" })
           }
         >
-          Start Calculating Now
+          Start Free Now
         </button>
-        <p style={{ marginTop: "15px", color: "#ddd", fontSize: "1em" }}>
-          Used by 5,000+ businesses • 4.9/5 from 127 reviews
+        <p style={{ marginTop: "18px", color: "#ddd", fontSize: "1.05em" }}>
+          Rated 4.9/5 by 5,000+ users • Trusted by logistics, real estate &
+          e-commerce
         </p>
       </div>
 
       {/* SUCCESS BANNER */}
       {showSuccess && (
         <div className="success-banner">
-          Payment successful! {needed} extra rows unlocked.
+          Payment successful! {needed} extra rows unlocked instantly.
         </div>
       )}
 
       {/* UPLOAD */}
       <div id="upload" className="upload">
-        <h2>Upload Your File</h2>
-        <p style={{ textAlign: "center", marginBottom: "20px", color: "#555" }}>
-          Accepts .xlsx or .csv • Max 10 MB
+        <h2>Upload Your Excel or CSV File</h2>
+        <p style={{ textAlign: "center", marginBottom: "22px", color: "#555" }}>
+          Supports .xlsx and .csv • Max 10 MB • 100% secure (files deleted after
+          use)
         </p>
         <input
           type="file"
           accept=".xlsx,.csv"
           onChange={(e) => handleFile(e.target.files[0])}
           disabled={isUploading || isCalculating}
-          style={{ display: "block", margin: "20px auto" }}
+          style={{ display: "block", margin: "22px auto" }}
         />
 
         {(isUploading || isCalculating) && (
           <div style={{ textAlign: "center" }}>
             <div className="spinner"></div>
-            <p style={{ fontSize: "1.1em", color: "#555" }}>
+            <p style={{ fontSize: "1.15em", color: "#555" }}>
               {isUploading
-                ? "Uploading & validating..."
-                : "Calculating distances..."}
+                ? "Validating your file..."
+                : "Calculating driving routes..."}
             </p>
           </div>
         )}
 
         {validation && (
           <div className="validation">
-            <h3>Validation Result</h3>
+            <h3>Validation Complete</h3>
             {error ? (
               <p style={{ color: "red" }}>{error}</p>
             ) : (
@@ -229,22 +229,22 @@ export default function App() {
                   <strong>Paid Available:</strong> {paidRows}
                 </p>
                 <p>
-                  <strong>Duplicates:</strong>{" "}
+                  <strong>Duplicates Removed:</strong>{" "}
                   {validation.duplicates.length || "None"}
                 </p>
 
                 {needed > 0 ? (
-                  <div style={{ textAlign: "center", marginTop: "20px" }}>
+                  <div style={{ textAlign: "center", marginTop: "22px" }}>
                     <p
                       style={{
                         color: "#d63384",
                         fontWeight: "bold",
-                        fontSize: "1.2em",
+                        fontSize: "1.3em",
                       }}
                     >
                       Need {needed} more row{needed > 1 ? "s" : ""}
                     </p>
-                    <p style={{ fontSize: "1.5em", margin: "15px 0" }}>
+                    <p style={{ fontSize: "1.6em", margin: "16px 0" }}>
                       Pay <strong>€{amount.toFixed(2)}</strong>
                     </p>
                     <a
@@ -257,12 +257,12 @@ export default function App() {
                     </a>
                     <p
                       style={{
-                        fontSize: "0.95em",
+                        fontSize: "0.98em",
                         color: "#666",
-                        marginTop: "10px",
+                        marginTop: "12px",
                       }}
                     >
-                      €0.10 per extra row • Instant unlock
+                      €0.10 per extra row • Instant unlock • No subscription
                     </p>
                   </div>
                 ) : (
@@ -271,7 +271,7 @@ export default function App() {
                     className="btn primary"
                     disabled={isCalculating}
                   >
-                    Calculate Distances
+                    Calculate Distances Now
                   </button>
                 )}
               </>
@@ -294,84 +294,162 @@ export default function App() {
           }}
           className="btn secondary"
         >
-          Download Template
+          Download Free Template
         </button>
       </div>
 
-      {/* 550+ WORDS CONTENT FOR ADSENSE */}
+      {/* CONTENT */}
       <div className="content">
-        <h2>
-          How to Use Bulk Distance Calculator for Logistics, Real Estate, and
-          Sales
-        </h2>
+        <h2>Why Use a Bulk Distance Calculator for Excel & CSV?</h2>
         <p>
-          The Bulk Distance Calculator is a powerful free tool designed for
-          businesses and individuals who need to calculate driving distances
-          between multiple locations quickly. Whether you're in logistics, real
-          estate, field sales, delivery planning, or route optimization, this
-          tool saves hours of manual work.
+          In today’s fast-paced world, businesses rely on accurate{" "}
+          <strong>driving distance calculations</strong> to optimize routes,
+          reduce fuel costs, and improve delivery times. Whether you're a
+          logistics manager, real estate agent, or e-commerce seller, manually
+          checking distances on Google Maps is slow, error-prone, and simply not
+          scalable.
         </p>
         <p>
-          Simply download the free Excel or CSV template, fill in your "From"
-          and "To" addresses, and upload the file. The system automatically
-          validates your data, removes duplicates, and calculates accurate
-          driving distances using real road networks — not straight-line
-          estimates.
+          That’s where the <strong>bulk distance calculator</strong> comes in.
+          This free online tool lets you upload an Excel or CSV file with
+          thousands of address pairs and returns precise{" "}
+          <strong>road-based driving distances</strong> in seconds — no API
+          setup, no coding, no limits.
         </p>
-        <p>
-          <strong>Why choose this tool?</strong> Unlike Google Maps, which
-          limits bulk calculations, our system handles thousands of rows
-          instantly. The first 10 rows are completely free. For larger datasets,
-          pay just €0.10 per extra row — no subscription required.
-        </p>
-        <p>
-          <strong>Perfect for:</strong>
-          <br />
-          • Delivery companies planning routes
-          <br />
-          • Real estate agents calculating commute times
-          <br />
-          • Sales teams optimizing territory coverage
-          <br />
-          • E-commerce businesses estimating shipping zones
-          <br />• Event planners coordinating multiple venues
-        </p>
-        <p>
-          Results are delivered in a clean Excel file with columns for origin,
-          destination, and exact driving distance in kilometers. All
-          calculations use premium routing APIs for accuracy you can trust.
-        </p>
-        <p>
-          Security is our priority. Files are processed in memory and
-          automatically deleted after calculation. No data is stored on our
-          servers.
-        </p>
-        <p>
-          Start using the Bulk Distance Calculator today and transform how you
-          handle location-based planning. Download the template, upload your
-          data, and get results in seconds.
-        </p>
+
+        <h3>How It Works (3 Simple Steps)</h3>
+        <ol>
+          <li>
+            <strong>Download the template</strong> – Free Excel/CSV format with
+            "From" and "To" columns
+          </li>
+          <li>
+            <strong>Fill in your addresses</strong> – Add as many locations as
+            needed
+          </li>
+          <li>
+            <strong>Upload & get results</strong> – Instant driving distances in
+            a downloadable Excel file
+          </li>
+        </ol>
+
+        <h3>Who Uses This Free Distance Calculator?</h3>
+        <ul>
+          <li>
+            <strong>Logistics & Delivery Companies</strong> – Optimize fleet
+            routing and reduce mileage
+          </li>
+          <li>
+            <strong>Real Estate Agents</strong> – Show clients commute times to
+            schools, stations, or offices
+          </li>
+          <li>
+            <strong>Field Sales Teams</strong> – Plan efficient territory
+            coverage and visit schedules
+          </li>
+          <li>
+            <strong>E-commerce & Retail</strong> – Estimate shipping zones and
+            delivery ETAs
+          </li>
+          <li>
+            <strong>Event Planners</strong> – Coordinate venues, parking, and
+            guest travel
+          </li>
+        </ul>
+      </div>
+
+      {/* FAQ SECTION – SEO GOLD */}
+      <div className="faq">
+        <h2>Frequently Asked Questions</h2>
+
+        <details>
+          <summary>How does the bulk distance calculator work?</summary>
+          <p>
+            Upload your Excel or CSV file with "From" and "To" addresses. The
+            tool uses premium geocoding and routing APIs to calculate real
+            driving distances (not straight-line). Results are returned in a
+            downloadable Excel file.
+          </p>
+        </details>
+
+        <details>
+          <summary>Is the first 10 rows really free?</summary>
+          <p>
+            Yes! The first 10 rows are 100% free, no credit card required. For
+            more rows, pay just €0.10 per extra row via PayPal. No subscription.
+          </p>
+        </details>
+
+        <details>
+          <summary>What file formats are supported?</summary>
+          <p>
+            We support both .xlsx (Excel) and .csv files. Download our free
+            template to get started in seconds.
+          </p>
+        </details>
+
+        <details>
+          <summary>Are my files secure?</summary>
+          <p>
+            Absolutely. Files are processed in memory and automatically deleted
+            after calculation. No data is stored on our servers.
+          </p>
+        </details>
+
+        <details>
+          <summary>
+            Can I calculate distances between cities or countries?
+          </summary>
+          <p>
+            Yes! The tool works globally. Enter any address, city, or postal
+            code — it will find the correct route using real road networks.
+          </p>
+        </details>
+
+        <details>
+          <summary>Why not just use Google Maps?</summary>
+          <p>
+            Google Maps limits bulk calculations and requires a paid API. Our
+            tool handles thousands of rows instantly with no setup.
+          </p>
+        </details>
+
+        <details>
+          <summary>How accurate are the distances?</summary>
+          <p>
+            Distances are calculated using premium routing APIs that consider
+            actual roads, one-way streets, and traffic rules — just like a GPS.
+          </p>
+        </details>
+
+        <details>
+          <summary>Do I need an API key?</summary>
+          <p>
+            No! Everything is handled on our side. Just upload your file and get
+            results.
+          </p>
+        </details>
       </div>
 
       {/* PRICING */}
       <div className="pricing">
-        <h2>Pay Only for What You Need</h2>
-        <p style={{ fontSize: "1.3em", margin: "20px 0" }}>
-          <strong>First 10 rows: Free</strong>
+        <h2>Simple, Transparent Pricing</h2>
+        <p style={{ fontSize: "1.35em", margin: "22px 0" }}>
+          <strong>First 10 rows: FREE</strong>
         </p>
         <p className="price">€0.10</p>
         <p>per extra row</p>
-        <p style={{ color: "#666", marginTop: "15px" }}>
-          No subscriptions • Pay once • Instant
+        <p style={{ color: "#666", marginTop: "16px" }}>
+          Pay once • No subscription • Instant access
         </p>
       </div>
 
       {/* FOOTER */}
       <footer>
         <p>
-          Made with care in 2025 •{" "}
+          © 2025 Bulk Distance Calculator •{" "}
           <a href="https://docs.distance.tools" style={{ color: "#fff" }}>
-            Documentation
+            Help & Documentation
           </a>
         </p>
       </footer>
