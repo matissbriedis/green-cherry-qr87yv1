@@ -8,59 +8,32 @@
 
     <!-- SEO -->
     <title>Bulk Distance Calculator – Free Excel & CSV Tool</title>
-    <meta
-      name="description"
-      content="Calculate 1000s of distances instantly from Excel or CSV. Free for 10 rows. Perfect for logistics, e-commerce, real estate & more."
-    />
-    <meta
-      name="keywords"
-      content="bulk distance calculator, excel distance tool, csv distance matrix, driving distance calculator, free distance api"
-    />
+    <meta name="description" content="Calculate 1000s of distances instantly from Excel or CSV. Free for 10 rows. Perfect for logistics, e-commerce, real estate & more." />
+    <meta name="keywords" content="bulk distance calculator, excel distance tool, csv distance matrix, driving distance calculator, free distance api" />
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph -->
-    <meta
-      property="og:title"
-      content="Bulk Distance Calculator – Free Excel & CSV Tool"
-    />
-    <meta
-      property="og:description"
-      content="Upload your file → Get accurate driving distances in seconds. Free for 10 rows!"
-    />
+    <meta property="og:title" content="Bulk Distance Calculator – Free Excel & CSV Tool" />
+    <meta property="og:description" content="Upload your file → Get accurate driving distances in seconds. Free for 10 rows!" />
     <meta property="og:url" content="https://distancesinbulk.com" />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:image"
-      content="https://distancesinbulk.com/og-image.jpg"
-    />
+    <meta property="og:image" content="https://distancesinbulk.com/og-image.jpg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Free Bulk Distance Calculator" />
-    <meta
-      name="twitter:description"
-      content="Excel/CSV → Distances in seconds. Free for 10 rows."
-    />
-    <meta
-      name="twitter:image"
-      content="https://distancesinbulk.com/og-image.jpg"
-    />
+    <meta name="twitter:description" content="Excel/CSV → Distances in seconds. Free for 10 rows." />
+    <meta name="twitter:image" content="https://distancesinbulk.com/og-image.jpg" />
 
     <!-- Canonical -->
     <link rel="canonical" href="https://distancesinbulk.com" />
 
     <!-- Google Verification -->
-    <meta
-      name="google-site-verification"
-      content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk"
-    />
+    <meta name="google-site-verification" content="A5jjoMCLv1fH-r3VIg1eglDltaxWiTKhK2cshPZjqUk" />
 
     <!-- AdSense Auto Ads -->
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1735278035868561"
-      crossorigin="anonymous"
-    ></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1735278035868561"
+         crossorigin="anonymous"></script>
 
     <!-- PayPal SDK -->
     <script
@@ -72,29 +45,19 @@
     <!-- PayPal Render -->
     <script>
       function renderPayPalButtons() {
-        if (
-          window.paypal &&
-          typeof window.paypal.HostedButtons === "function"
-        ) {
-          [
-            "paypal-container-SZHCMQ36L2RAU",
-            "paypal-container-SZHCMQ36L2RAU-pricing",
-          ].forEach((id) => {
+        if (window.paypal && typeof window.paypal.HostedButtons === "function") {
+          ["paypal-container-SZHCMQ36L2RAU", "paypal-container-SZHCMQ36L2RAU-pricing"].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-              window.paypal
-                .HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
-                .render(`#${id}`)
-                .catch(console.error);
+              window.paypal.HostedButtons({ hostedButtonId: "SZHCMQ36L2RAU" })
+                .render(`#${id}`).catch(console.error);
             }
           });
         } else {
           setTimeout(renderPayPalButtons, 100);
         }
       }
-      window.addEventListener("load", () =>
-        setTimeout(renderPayPalButtons, 300)
-      );
+      window.addEventListener("load", () => setTimeout(renderPayPalButtons, 300));
     </script>
   </head>
   <body>
