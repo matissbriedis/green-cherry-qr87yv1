@@ -1,5 +1,5 @@
 // src/components/ValidationResult.jsx
-import PayPalButton from "./PayPalButton"; // ← THIS WAS MISSING
+import PayPalButton from "./PayPalButton"; // ← CORRECT PATH
 import styles from "../styles/Button.module.css";
 
 export default function ValidationResult({
@@ -43,14 +43,28 @@ export default function ValidationResult({
 
           {needed > 0 ? (
             <div style={{ textAlign: "center", margin: "25px 0" }}>
-              <p style={{ color: "#d63384", fontWeight: "bold" }}>
+              <p
+                style={{
+                  color: "#d63384",
+                  fontWeight: "bold",
+                  fontSize: "1.1em",
+                }}
+              >
                 Need {needed} more row{needed > 1 ? "s" : ""}
               </p>
-              <p style={{ fontSize: "1.3em", margin: "15px 0" }}>
+              <p
+                style={{
+                  fontSize: "1.3em",
+                  margin: "15px 0",
+                  color: "#2c3e50",
+                }}
+              >
                 Pay <strong>€{amount.toFixed(2)}</strong>
               </p>
               <PayPalButton amount={amount} onSuccess={onUnlock} />
-              <p style={{ fontSize: "0.9em", color: "#666" }}>
+              <p
+                style={{ fontSize: "0.9em", color: "#666", marginTop: "10px" }}
+              >
                 €0.10 per extra row • Instant unlock
               </p>
             </div>
