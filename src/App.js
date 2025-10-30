@@ -7,7 +7,18 @@ import Footer from "./components/Footer";
 import useDistanceCalculator from "./hooks/useDistanceCalculator";
 
 export default function App() {
-  const { data, results, validation, isUploading, isCalculating, uploadProgress, error, handleFile, calculate, download } = useDistanceCalculator();
+  const {
+    data,
+    results,
+    validation,
+    isUploading,
+    isCalculating,
+    uploadProgress,
+    error,
+    handleFile,
+    calculate,
+    download,
+  } = useDistanceCalculator();
   const [paidRows, setPaidRows] = useState(0);
 
   useEffect(() => {
@@ -33,7 +44,11 @@ export default function App() {
   return (
     <div className="app">
       <Hero />
-      <UploadSection onFileUpload={handleFile} isUploading={isUploading} uploadProgress={uploadProgress}>
+      <UploadSection
+        onFileUpload={handleFile}
+        isUploading={isUploading}
+        uploadProgress={uploadProgress}
+      >
         {validation && (
           <ValidationResult
             data={data}
@@ -45,12 +60,38 @@ export default function App() {
           />
         )}
         {results.length > 0 && !isCalculating && (
-          <button onClick={download} style={{ width: "100%", padding: "12px", background: "#28a745", color: "white", border: "none", borderRadius: "6px", marginTop: "15px" }}>
+          <button
+            onClick={download}
+            style={{
+              width: "100%",
+              padding: "12px",
+              background: "#28a745",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              marginTop: "15px",
+            }}
+          >
             Download Results (Excel)
           </button>
         )}
-        <button onClick={() => { const a = document.createElement("a"); a.href = "/distance_template.xlsx"; a.download = "template.xlsx"; a.click(); }}
-          style={{ width: "100%", padding: "12px", background: "#6c757d", color: "white", border: "none", borderRadius: "6px", marginTop: "15px" }}>
+        <button
+          onClick={() => {
+            const a = document.createElement("a");
+            a.href = "/distance_template.xlsx";
+            a.download = "template.xlsx";
+            a.click();
+          }}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "#6c757d",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            marginTop: "15px",
+          }}
+        >
           Download Template
         </button>
       </UploadSection>
