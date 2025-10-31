@@ -1,2 +1,5 @@
 node_modulessrc/.env
 src/.env
+REACT_APP_GEOAPIFY_KEY=* .env
+REACT_APP_GEOAPIFY_KEY=*
+.env
