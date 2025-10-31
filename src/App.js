@@ -1,11 +1,15 @@
 // src/App.js
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
+// Import DocsPage
+import DocsPage from "./pages/DocsPage";
+
 const GEOAPIFY_API_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
 
-export default function App() {
+function Home() {
   const [data, setData] = useState([]);
   const [results, setResults] = useState([]);
   const [validation, setValidation] = useState(null);
@@ -358,79 +362,6 @@ export default function App() {
         </ul>
       </div>
 
-      {/* FAQ SECTION – SEO GOLD */}
-      <div className="faq">
-        <h2>Frequently Asked Questions</h2>
-
-        <details>
-          <summary>How does the bulk distance calculator work?</summary>
-          <p>
-            Upload your Excel or CSV file with "From" and "To" addresses. The
-            tool uses premium geocoding and routing APIs to calculate real
-            driving distances (not straight-line). Results are returned in a
-            downloadable Excel file.
-          </p>
-        </details>
-
-        <details>
-          <summary>Is the first 10 rows really free?</summary>
-          <p>
-            Yes! The first 10 rows are 100% free, no credit card required. For
-            more rows, pay just €0.10 per extra row via PayPal. No subscription.
-          </p>
-        </details>
-
-        <details>
-          <summary>What file formats are supported?</summary>
-          <p>
-            We support both .xlsx (Excel) and .csv files. Download our free
-            template to get started in seconds.
-          </p>
-        </details>
-
-        <details>
-          <summary>Are my files secure?</summary>
-          <p>
-            Absolutely. Files are processed in memory and automatically deleted
-            after calculation. No data is stored on our servers.
-          </p>
-        </details>
-
-        <details>
-          <summary>
-            Can I calculate distances between cities or countries?
-          </summary>
-          <p>
-            Yes! The tool works globally. Enter any address, city, or postal
-            code — it will find the correct route using real road networks.
-          </p>
-        </details>
-
-        <details>
-          <summary>Why not just use Google Maps?</summary>
-          <p>
-            Google Maps limits bulk calculations and requires a paid API. Our
-            tool handles thousands of rows instantly with no setup.
-          </p>
-        </details>
-
-        <details>
-          <summary>How accurate are the distances?</summary>
-          <p>
-            Distances are calculated using premium routing APIs that consider
-            actual roads, one-way streets, and traffic rules — just like a GPS.
-          </p>
-        </details>
-
-        <details>
-          <summary>Do I need an API key?</summary>
-          <p>
-            No! Everything is handled on our side. Just upload your file and get
-            results.
-          </p>
-        </details>
-      </div>
-
       {/* PRICING */}
       <div className="pricing">
         <h2>Simple, Transparent Pricing</h2>
@@ -444,15 +375,29 @@ export default function App() {
         </p>
       </div>
 
-      {/* FOOTER */}
+      {/* FOOTER – LINK TO /docs */}
       <footer>
         <p>
-          © 2025 Bulk Distance Calculator •{" "}
-          <a href="https://docs.distance.tools" style={{ color: "#fff" }}>
+          © 2025 Distances in Bulk •{" "}
+          <Link
+            to="/docs"
+            style={{ color: "#fff", textDecoration: "underline" }}
+          >
             Help & Documentation
-          </a>
+          </Link>
         </p>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/docs" element={<DocsPage />} />
+      </Routes>
+    </Router>
   );
 }
