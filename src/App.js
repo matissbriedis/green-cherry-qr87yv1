@@ -9,13 +9,7 @@ import DocsPage from "./pages/DocsPage";
 
 const GEOAPIFY_KEY = process.env.REACT_APP_GEOAPIFY_KEY;
 
-// EU CO₂ emissions (kg/km)
-const CO2_PER_KM = {
-  car: 0.171,
-  van: 0.25,
-  truck: 0.85,
-  electric: 0.05,
-};
+const CO2_PER_KM = { car: 0.171, van: 0.25, truck: 0.85, electric: 0.05 };
 
 function Home() {
   const [data, setData] = useState([]);
@@ -29,7 +23,6 @@ function Home() {
   const [totalCO2Saved, setTotalCO2Saved] = useState(null);
   const [totalTrees, setTotalTrees] = useState(null);
 
-  // Load paid rows + PayPal return
   useEffect(() => {
     const saved = localStorage.getItem("paidRows");
     if (saved) setPaidRows(parseInt(saved, 10));
@@ -49,7 +42,6 @@ function Home() {
     }
   }, []);
 
-  // File upload
   const handleFile = (file) => {
     if (!file) return;
     setIsUploading(true);
@@ -78,7 +70,6 @@ function Home() {
       : reader.readAsBinaryString(file);
   };
 
-  // Calculate distances + CO₂
   const calculate = async () => {
     const total = 10 + paidRows;
     if (data.length > total) return setError("Need more rows. Upgrade below.");
@@ -132,7 +123,7 @@ function Home() {
           CO2: `${co2Actual.toFixed(3)} kg`,
           CO2_Saved: `+${co2Saved} kg`,
         });
-      } catch (err) {
+      } catch {
         out.push({
           ...row,
           Vehicle: vehicle,
@@ -151,7 +142,6 @@ function Home() {
     setIsCalculating(false);
   };
 
-  // Geocode helper
   const geocode = async (addr) => {
     try {
       const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
@@ -167,7 +157,6 @@ function Home() {
     }
   };
 
-  // Download Excel
   const download = () => {
     const ws = XLSX.utils.json_to_sheet(
       results.map((r) => ({
@@ -187,47 +176,13 @@ function Home() {
     XLSX.writeFile(wb, "distances_co2_saved.xlsx");
   };
 
-  // PayPal
   const needed = Math.max(0, data.length - 10 - paidRows);
   const amount = (needed * 0.1).toFixed(2);
   const PAYPAL_EMAIL = "matiss.briedis@hotmail.com";
-  const PAYPAL_URL = `https://www.paypal.com/cgi-bin/webscr`;
-
-  const paypalForm = needed > 0 && (
-    <form
-      action={PAYPAL_URL}
-      method="post"
-      target="_top"
-      style={{ marginTop: "20px" }}
-    >
-      <input type="hidden" name="cmd" value="_xclick" />
-      <input type="hidden" name="business" value={PAYPAL_EMAIL} />
-      <input
-        type="hidden"
-        name="item_name"
-        value={`Unlock ${needed} extra rows`}
-      />
-      <input type="hidden" name="amount" value={amount} />
-      <input type="hidden" name="currency_code" value="EUR" />
-      <input
-        type="hidden"
-        name="return"
-        value={`${window.location.origin}?paid=${needed}`}
-      />
-      <input
-        type="hidden"
-        name="cancel_return"
-        value={window.location.origin}
-      />
-      <button type="submit" className="btn primary">
-        Pay €{amount} with PayPal
-      </button>
-    </form>
-  );
+  const PAYPAL_URL = "https://www.paypal.com/cgi-bin/webscr";
 
   return (
     <div className="container">
-      {/* HERO */}
       <div className="hero">
         <h1>Bulk Distance & CO₂ Calculator</h1>
         <p>Free Excel/CSV tool • First 10 rows free • €0.10 per extra row</p>
@@ -249,11 +204,9 @@ function Home() {
         </div>
       )}
 
-      {/* UPLOAD */}
       <div id="upload" className="upload">
         <h2>Upload File</h2>
 
-        {/* Vehicle Selector */}
         <div style={{ textAlign: "center", margin: "25px 0" }}>
           <p style={{ fontWeight: 600 }}>Vehicle:</p>
           <div
@@ -322,7 +275,30 @@ function Home() {
                 <p style={{ color: "#d63384", fontWeight: "bold" }}>
                   Need {needed} more rows
                 </p>
-                {paypalForm}
+                <form
+                  action={PAYPAL_URL}
+                  method="post"
+                  target="_top"
+                  style={{ marginTop: "15px" }}
+                >
+                  <input type="hidden" name="cmd" value="_xclick" />
+                  <input type="hidden" name="business" value={PAYPAL_EMAIL} />
+                  <input
+                    type="hidden"
+                    name="item_name"
+                    value={`Unlock ${needed} extra rows`}
+                  />
+                  <input type="hidden" name="amount" value={amount} />
+                  <input type="hidden" name="currency_code" value="EUR" />
+                  <input
+                    type="hidden"
+                    name="return"
+                    value={`${window.location.origin}?paid=${needed}`}
+                  />
+                  <button type="submit" className="btn primary">
+                    Pay €{amount} with PayPal
+                  </button>
+                </form>
               </>
             ) : (
               <button
@@ -343,7 +319,6 @@ function Home() {
           </div>
         )}
 
-        {/* RESULTS */}
         {results.length > 0 && !isCalculating && (
           <>
             <div className="co2-saved-badge">
@@ -366,7 +341,6 @@ function Home() {
         )}
       </div>
 
-      {/* FOOTER */}
       <footer>
         <p>
           © 2025 Distances in Bulk • <Link to="/about">About</Link> •{" "}
