@@ -17,7 +17,7 @@
       content="bulk distance calculator, co2 emissions calculator, carbon footprint, excel co2 tool, driving emissions, fleet calculator, electric vehicle savings, carbon savings calculator"
     />
 
-    <!-- Open Graph -->
+    <!-- Open Graph / Social Sharing -->
     <meta
       property="og:title"
       content="Bulk Distance & CO₂ Calculator – Free Tool"
@@ -31,6 +31,18 @@
     <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Bulk Distance & CO₂ Calculator – Free Tool"
+    />
+    <meta
+      name="twitter:description"
+      content="Calculate driving distances + carbon savings. Free for 10 rows!"
+    />
+    <meta name="twitter:image" content="%PUBLIC_URL%/og-image.png" />
 
     <!-- Google Analytics (GA4) -->
     <script
@@ -46,10 +58,10 @@
       gtag("config", "G-3GGB7GLZ2Y");
     </script>
 
-    <!-- PayPal Smart Buttons SDK -->
+    <!-- PayPal Smart Buttons SDK (EUR, Secure) -->
     <script src="https://www.paypal.com/sdk/js?client-id=BAAKD5I9Khgib1LUJQlNavgviT0MghV3w4fhBxO5ld8y9rSuPacFQj1QGqx7r5XKdxGgN3e_aP1ZmEPwjg&currency=EUR&components=buttons"></script>
 
-    <!-- DARK MODE + ANIMATIONS -->
+    <!-- FULL CSS: Buttons, Hero, Upload, Spinner, Badge, Animations -->
     <style>
       /* ANIMATIONS */
       @keyframes spin {
@@ -83,40 +95,6 @@
         }
       }
 
-      /* DARK MODE VARIABLES */
-      :root {
-        --bg: #f8f9fa;
-        --text: #2c3e50;
-        --card-bg: #ffffff;
-        --hero-bg: linear-gradient(135deg, #007bff, #00c6ff);
-        --success-bg: #d4edda;
-        --success-text: #155724;
-        --badge-bg: linear-gradient(135deg, #d4edda, #c3e6cb);
-        --badge-border: #28a745;
-        --shadow: rgba(0, 0, 0, 0.12);
-        --input-bg: #fff;
-        --input-border: #ddd;
-      }
-      [data-theme="dark"] {
-        --bg: #121212;
-        --text: #e0e0e0;
-        --card-bg: #1e1e1e;
-        --hero-bg: linear-gradient(135deg, #1e40af, #1e3a8a);
-        --success-bg: #1a3e2c;
-        --success-text: #a8e6cf;
-        --badge-bg: linear-gradient(135deg, #1a3e2c, #2d6a4f);
-        --badge-border: #4ade80;
-        --shadow: rgba(0, 0, 0, 0.4);
-        --input-bg: #2d2d2d;
-        --input-border: #444;
-      }
-
-      /* SMOOTH TRANSITION */
-      * {
-        transition: background 0.3s ease, color 0.3s ease, border 0.3s ease,
-          box-shadow 0.3s ease;
-      }
-
       /* GENERAL */
       * {
         box-sizing: border-box;
@@ -125,48 +103,14 @@
       }
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: var(--bg);
-        color: var(--text);
+        background: #f8f9fa;
+        color: #2c3e50;
         line-height: 1.7;
       }
       .container {
         max-width: 1100px;
         margin: 0 auto;
         padding: 20px;
-      }
-
-      /* TOGGLE BUTTON */
-      .theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--card-bg);
-        border: 1px solid var(--input-border);
-        border-radius: 50px;
-        width: 60px;
-        height: 32px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        padding: 4px;
-        z-index: 1000;
-        box-shadow: 0 2px 8px var(--shadow);
-      }
-      .theme-toggle .slider {
-        width: 24px;
-        height: 24px;
-        background: #007bff;
-        border-radius: 50%;
-        transition: transform 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 0.9em;
-      }
-      [data-theme="dark"] .theme-toggle .slider {
-        transform: translateX(28px);
-        background: #4ade80;
       }
 
       /* BUTTONS */
@@ -184,11 +128,11 @@
         cursor: pointer;
         transition: all 0.3s ease;
         text-decoration: none;
-        box-shadow: 0 4px 8px var(--shadow);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
       }
       .btn:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 16px var(--shadow);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       }
       .primary {
         background: #007bff;
@@ -226,7 +170,7 @@
       .hero {
         text-align: center;
         padding: 80px 20px;
-        background: var(--hero-bg);
+        background: linear-gradient(135deg, #007bff, #00c6ff);
         color: white;
         border-radius: 16px;
         margin: 30px 0;
@@ -243,29 +187,29 @@
 
       /* SUCCESS BANNER */
       .success-banner {
-        background: var(--success-bg);
-        color: var(--success-text);
+        background: #d4edda;
+        color: #155724;
         padding: 18px;
         border-radius: 12px;
         margin: 25px 0;
         text-align: center;
         font-weight: 600;
         font-size: 1.15em;
-        border: 1px solid var(--badge-border);
+        border: 1px solid #c3e6cb;
       }
 
       /* UPLOAD SECTION */
       .upload {
-        background: var(--card-bg);
+        background: white;
         padding: 55px 30px;
         border-radius: 16px;
-        box-shadow: 0 8px 20px var(--shadow);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         margin: 40px 0;
       }
       .upload h2 {
         text-align: center;
         margin-bottom: 30px;
-        color: var(--text);
+        color: #2c3e50;
         font-size: 2.2em;
       }
       .upload input[type="file"] {
@@ -273,9 +217,6 @@
         margin: 25px auto;
         padding: 12px;
         font-size: 1em;
-        background: var(--input-bg);
-        border: 1px solid var(--input-border);
-        border-radius: 8px;
       }
 
       /* SPINNER */
@@ -283,41 +224,37 @@
         display: inline-block;
         width: 55px;
         height: 55px;
-        border: 6px solid #333;
+        border: 6px solid #f3f3f3;
         border-top: 6px solid #007bff;
         border-radius: 50%;
         animation: spin 1s linear infinite;
         margin: 25px auto;
       }
-      [data-theme="dark"] .spinner {
-        border-color: #444;
-        border-top-color: #4ade80;
-      }
 
       /* VALIDATION */
       .validation {
-        background: var(--card-bg);
+        background: #f1f3f5;
         padding: 30px;
         border-radius: 14px;
         margin: 30px 0;
         border-left: 6px solid #007bff;
       }
       .validation h3 {
-        color: var(--text);
+        color: #2c3e50;
         margin-bottom: 18px;
         font-size: 1.7em;
       }
 
       /* CO₂ SAVED BADGE */
       .co2-saved-badge {
-        background: var(--badge-bg);
-        border: 2px solid var(--badge-border);
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border: 2px solid #28a745;
         border-radius: 16px;
         padding: 22px;
         margin: 35px auto;
         max-width: 520px;
         text-align: center;
-        box-shadow: 0 8px 16px var(--shadow);
+        box-shadow: 0 8px 16px rgba(40, 167, 69, 0.2);
         animation: fadeInPulse 1.5s ease-out;
       }
       .badge-content {
@@ -332,46 +269,46 @@
       }
       .badge-text strong {
         font-size: 2.1em;
-        color: var(--success-text);
+        color: #155724;
         display: block;
       }
       .badge-text p {
         font-size: 1.1em;
         margin: 6px 0 0;
-        color: var(--success-text);
+        color: #155724;
       }
 
       /* CONTENT & FAQ */
       .content,
       .faq {
-        background: var(--card-bg);
+        background: white;
         padding: 55px 35px;
         border-radius: 16px;
-        box-shadow: 0 8px 20px var(--shadow);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         margin: 40px 0;
         line-height: 1.9;
       }
       .content h2,
       .faq h2 {
-        color: var(--text);
+        color: #2c3e50;
         margin: 30px 0 22px;
         font-size: 2em;
       }
       .content h3 {
-        color: var(--text);
+        color: #2c3e50;
         margin: 32px 0 18px;
         font-size: 1.7em;
       }
       .faq details {
         margin-bottom: 22px;
-        border-bottom: 1px solid #444;
+        border-bottom: 1px solid #eee;
         padding-bottom: 18px;
       }
       .faq summary {
         font-weight: 600;
         font-size: 1.2em;
         cursor: pointer;
-        color: var(--text);
+        color: #2c3e50;
         padding: 14px 0;
         outline: none;
       }
@@ -383,13 +320,13 @@
       .pricing {
         text-align: center;
         padding: 70px 20px;
-        background: var(--card-bg);
+        background: #f8f9fa;
         border-radius: 16px;
         margin: 40px 0;
       }
       .pricing h2 {
         font-size: 2.4em;
-        color: var(--text);
+        color: #2c3e50;
         margin-bottom: 25px;
       }
       .price {
@@ -402,14 +339,10 @@
       footer {
         text-align: center;
         padding: 50px;
-        background: #1a1a1a;
-        color: #aaa;
+        background: #343a40;
+        color: white;
         margin-top: 70px;
         font-size: 1.05em;
-      }
-      [data-theme="dark"] footer {
-        background: #0d0d0d;
-        color: #ccc;
       }
       footer a {
         color: #fff;
@@ -442,33 +375,5 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-
-    <!-- DARK MODE TOGGLE -->
-    <div class="theme-toggle" id="themeToggle">
-      <div class="slider">Sun/Moon</div>
-    </div>
-
-    <script>
-      // Auto-detect & apply theme
-      const toggle = document.getElementById("themeToggle");
-      const setTheme = (theme) => {
-        document.documentElement.setAttribute("data-theme", theme);
-        localStorage.setItem("theme", theme);
-        toggle.querySelector(".slider").textContent =
-          theme === "dark" ? "Moon" : "Sun";
-      };
-
-      const saved = localStorage.getItem("theme");
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      const initial = saved || (prefersDark ? "dark" : "light");
-      setTheme(initial);
-
-      toggle.addEventListener("click", () => {
-        const current = document.documentElement.getAttribute("data-theme");
-        setTheme(current === "dark" ? "light" : "dark");
-      });
-    </script>
   </body>
 </html>
